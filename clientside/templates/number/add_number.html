@@ -1,0 +1,35 @@
+
+
+{% extends "base.html" %}
+
+{% block content %}
+
+{% include 'navbar.html' %}
+
+<h2>Add Number for {{ client.trade_name }}</h2>
+
+<form method="POST">
+    {% csrf_token %}
+
+    <label>Number:</label>
+    {{ form.number }}
+
+    <label>SIM Status:</label>
+    {{ form.sim_status }}
+
+    <label>Collection Day:</label>
+    {{ form.collection_day }}
+
+    <label>Handler:</label>
+    {{ form.handler }}
+
+    <button type="submit">Add Number</button>
+</form>
+
+{% if form.errors %}
+    <div style="color: red;">
+        {{ form.errors }}
+    </div>
+{% endif %}
+
+{% endblock %}

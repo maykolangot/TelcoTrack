@@ -1,0 +1,15 @@
+<label>Municipality</label>
+<select 
+    name="municipality"
+    id="id_municipality"
+    hx-get="{% url 'load-barangays' %}"
+    hx-target="#barangay-container"
+    hx-trigger="change"
+>
+    <option value="">---------</option>
+    {% if municipalities %}
+        {% for m in municipalities %}
+        <option value="{{ m.id }}">{{ m.name }}</option>
+        {% endfor %}
+    {% endif %}
+</select>

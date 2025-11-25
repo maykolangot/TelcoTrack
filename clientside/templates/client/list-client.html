@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+
+{% include 'navbar.html' %}
+
+<script src="https://unpkg.com/htmx.org@1.9.10"></script>
+
+<h1>My Clients</h1>  <a href="{% url 'create-client' %}">Add a Client</a>
+
+<!-- Search bar -->
+<input 
+    type="text"
+    name="search"
+    placeholder="Search client by name…"
+    hx-get="{% url 'search-clients' %}"
+    hx-trigger="keyup changed delay:300ms"
+    hx-target="#client-results"
+    class="form-control"
+/>
+
+<div id="client-results">
+    {% include "client/partials/client_list.html" with clients=clients %}
+</div>
+
+{% endblock %}

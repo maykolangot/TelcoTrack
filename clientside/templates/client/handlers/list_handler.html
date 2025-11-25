@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block content %}
+{% include 'navbar.html' %}
+
+<h2>Handlers for {{ client.name }} ({{ client.trade_name }})</h2>
+
+<a href="{% url 'add-handler' client.id %}" class="btn btn-primary mb-3">
+    Add Handler
+</a>
+
+{% if handlers %}
+    <ul class="list-group">
+        {% for handler in handlers %}
+            <li class="list-group-item">
+                <strong>{{ handler.name }}</strong> —
+                {{ handler.contact }}
+            </li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>No handlers found for this client.</p>
+{% endif %}
+
+<a href="{% url 'client-detail' client.id %}" class="btn btn-secondary mt-3">Back to Client</a>
+
+{% endblock %}

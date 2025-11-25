@@ -1,0 +1,12 @@
+<ul class="list-group">
+    {% for number in numbers %}
+        <a href="{% url 'number-detail' number.id %}" 
+           class="list-group-item list-group-item-action">
+            <strong>{{ number.number }}</strong>
+            <span class="text-muted">— {{ number.operator.name }}</span>
+            <span class="text-muted">— {{ number.sim_status }}</span>
+        </a>
+    {% empty %}
+        <li class="list-group-item">No numbers found.</li>
+    {% endfor %}
+</ul>

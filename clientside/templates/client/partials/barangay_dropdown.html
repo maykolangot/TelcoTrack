@@ -1,0 +1,9 @@
+<label>Barangay</label>
+<select name="barangay" id="id_barangay">
+    <option value="">---------</option>
+    {% if barangays %}
+        {% for b in barangays %}
+        <option value="{{ b.id }}">{{ b.name }}</option>
+        {% endfor %}
+    {% endif %}
+</select>

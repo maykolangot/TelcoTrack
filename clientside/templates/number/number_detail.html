@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block content %}
+{% include 'navbar.html' %}
+
+<h2>Number Details</h2>
+
+<p><strong>Number:</strong> {{ number.number }}</p>
+<p><strong>Operator:</strong> {{ number.operator.name }}</p>
+<p><strong>SIM Status:</strong> {{ number.sim_status }}</p>
+<p><strong>Collection Day:</strong> {{ number.collection_day }}</p>
+<p><strong>Client:</strong> {{ number.client.name }}</p>
+
+<a href="{% url 'edit-number' number.id %}" class="btn btn-primary mt-3">
+    Edit Number
+</a>
+
+<a href="javascript:history.back()" class="btn btn-secondary">Back</a>
+
+
+
+{% endblock %}

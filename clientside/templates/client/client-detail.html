@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+{% include 'navbar.html' %}
+
+
+<div>
+    <h2>{{ client.name }}</h2>
+
+    <p><strong>Trade Name:</strong> {{ client.trade_name }}</p>
+    <p><strong>Contact:</strong> {{ client.contact_number }}</p>
+    <p><strong>Status:</strong> {{ client.status }}</p>
+    <p><strong>Application Date:</strong> {{ client.application_date }}</p>
+
+    <h3>Address</h3>
+    <p>
+        {{ client.primary_address.house_number_street }}<br>
+        {{ client.primary_address.barangay }}<br>
+        {{ client.primary_address.municipality }}<br>
+        {{ client.primary_address.province }}<br>
+        {{ client.primary_address.region }}
+    </p>
+
+</div>
+
+
+
+
+<div>
+
+<h3>Handlers</h3>
+
+    <a href="{% url 'add-handler' client.id %}" class="btn btn-primary mb-2">
+        Add Handler
+    </a>
+
+    {% if handlers %}
+        <ul class="list-group mb-3">
+            {% for handler in handlers %}
+                <a href="{% url 'edit-handler' client.id handler.id %}" class="list-group-item list-group-item-action">
+                    <strong>{{ handler.name }}</strong>
+                    <span class="text-muted">— {{ handler.contact }}</span>
+                </a>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No handlers added for this client yet.</p>
+    {% endif %}
+</div>
+
+
+
+<div>
+    <h3>Numbers</h3>
+
+<a href="{% url 'add-number' client.id %}" class="btn btn-primary mb-2">
+    Add Number
+</a>
+
+<div class="mb-3">
+    <input 
+        type="text" 
+        name="search" 
+        placeholder="Search number…" 
+        hx-get="{% url 'number-search' client.id %}"
+        hx-target="#number-list"
+        hx-trigger="keyup changed delay:300ms"
+        class="form-control"
+    >
+</div>
+
+    <div class="mb-3">
+        <select
+            name="operator"
+            hx-get="{% url 'number-search' client.id %}"
+            hx-target="#number-list"
+            class="form-select"
+        >
+            <option value="">All Operators</option>
+            {% for op in operators %}
+            <option value="{{ op.id }}">{{ op.name }}</option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <div id="number-list">
+        {% include 'number/partials/number_list.html' %}
+    </div>
+
+</div>
+
+
+<a href="{% url 'clients' %}" class="btn btn-secondary">Back to list</a>
+
+
+
+{% endblock %}
