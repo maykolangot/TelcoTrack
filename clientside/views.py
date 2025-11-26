@@ -2,10 +2,14 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import auth
 from django.contrib.auth.decorators import login_required
-
+from django.contrib import messages
 from django.http import HttpResponse
 from django.template.loader import render_to_string
-
+from django.urls import reverse
+from django.utils import timezone
+from django.core.paginator import Paginator
+from django.db.utils import OperationalError
+from django.db import connection
 
 from .models import (
     Region,
@@ -16,18 +20,18 @@ from .models import (
     Handler,
     NumberOperatorIdentifier,
     Operator,
-    Number
-
+    Number,
+    Payment,
+    Invoice,
 )
-
-
-from django.contrib import messages
 
 from .forms import (
     LoginForm,
     CreateClientForm,
     HandlerForm,
     AddNumberForm,
+    InvoiceForm,
+    PaymentForm,
     )
 # Create your views here.
 
@@ -36,9 +40,23 @@ from .forms import (
 
 
 def index(request):
-    return render(request, "index.html")
+    # Default assumption
+    db_connected = True
+    
+    try:
+        # Attempt a simple operation to verify the connection is active
+        # 'connection.ensure_connection()' attempts to make a new connection if none exists.
+        connection.ensure_connection()
+    except OperationalError:
+        # This exception fires if the database server can't be reached
+        db_connected = False
 
-
+    # Pass the connection status to the template context
+    context = {
+        'db_connected': db_connected
+    }
+    
+    return render(request, "index.html", context)
 def my_login(request):
     form = LoginForm()
 
@@ -274,8 +292,10 @@ def number_search(request, client_id):
 def number_detail(request, number_id):
     number = get_object_or_404(Number, id=number_id)
 
-    return render(request, "number/number_detail.html", {
-        "number": number
+    # Initial load, htmx will replace the table body
+    return render(request, 'number/number_detail.html', {
+        'number': number,
+        'current_balance': number.current_balance,
     })
 
 
@@ -338,23 +358,115 @@ def search_number_page(request):
     })
 
 
-@login_required
-def payment_invoice(request, number_id):
-    # Only fetch if the number belongs to the logged-in user's client
-    number_obj = get_object_or_404(
-        Number.objects.select_related("client", "operator", "handler"),
-        id=number_id,
-        client__user_client=request.user
-    )
+def payment_invoice_page(request):
+    return render(request, "payments/payment_invoice.html")
 
-    # Load invoice/payment data here (optional)
-    # payments = Payment.objects.filter(number=number_obj)
 
-    return render(request, "payments/payment_invoice.html", {
-        "number": number_obj,
-        # "payments": payments,
+def add_invoice(request, number_id):
+    number = get_object_or_404(Number, id=number_id)
+
+    if request.method == 'POST':
+        form = InvoiceForm(request.POST)
+        if form.is_valid():
+            invoice = form.save(commit=False)
+            invoice.number = number  # attach invoice to the number
+            invoice.save()
+            return redirect(reverse('number-detail', args=[number_id]))
+    else:
+        form = InvoiceForm(initial={'time': timezone.now()})
+
+    return render(request, 'payments/add_invoice.html', {
+        'form': form,
+        'number': number
     })
 
 
-def payment_invoice_page(request):
-    return render(request, "payments/payment_invoice.html")
+def add_payment(request, number_id):
+    number = get_object_or_404(Number, id=number_id)
+
+    if request.method == 'POST':
+        form = PaymentForm(request.POST)
+        if form.is_valid():
+            payment = form.save(commit=False)
+            payment.number = number  # attach payment to the number
+            payment.save()
+            return redirect(reverse('number-detail', args=[number_id]))
+    else:
+        form = PaymentForm(initial={'time': timezone.now()})
+
+    return render(request, 'payments/add_payment.html', {
+        'form': form,
+        'number': number
+    })
+
+
+def build_history_queryset(number):
+    # Convert invoices
+    invoice_entries = [
+        {
+            "type": "Invoice",
+            "time": inv.time,
+            "amount": inv.balance,
+            "reference": inv.reference_number,
+        }
+        for inv in number.invoices.all()
+    ]
+
+    # Convert payments
+    payment_entries = [
+        {
+            "type": "Payment",
+            "time": pay.time,
+            "amount": pay.paid_amount,
+            "reference": "",
+        }
+        for pay in number.payments.all()
+    ]
+
+    return invoice_entries + payment_entries
+
+
+def hx_history_table(request, number_id):
+    number = get_object_or_404(Number, id=number_id)
+    history = build_history_queryset(number)
+
+    # --- SEARCH ---
+    search = request.GET.get('search', '').strip()
+    if search:
+        history = [h for h in history if search.lower() in str(h['reference']).lower() or search.lower() in str(h['time']).lower()]
+
+    # --- SORT ---
+    sort = request.GET.get('sort', 'time_desc')
+    reverse = True
+    key = 'time'
+
+    if sort == 'time_asc':
+        reverse = False
+    elif sort == 'amount_desc':
+        key = 'amount'
+    elif sort == 'amount_asc':
+        key = 'amount'
+        reverse = False
+    elif sort == 'type_asc':
+        key = 'type'
+        reverse = False
+    elif sort == 'type_desc':
+        key = 'type'
+        reverse = True
+
+    history = sorted(history, key=lambda x: x[key], reverse=reverse)
+
+    # --- PAGINATION ---
+    page_number = request.GET.get("page", 1)
+    paginator = Paginator(history, 10)
+    page_obj = paginator.get_page(page_number)
+
+    return render(request, 'payments/payment_invoice_history.html', {
+        'page_obj': page_obj,
+        'sort': sort,
+        'search': search,
+        'number': number,              # ➜ added
+    })
+
+
+

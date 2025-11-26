@@ -4,19 +4,43 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <!-- ... (head content remains the same) ... -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Load Tracker Application{% endblock %}</title>
+    <title>{% block title %}TelcoTrack{% endblock %}</title>
 
     <!-- Bootstrap CSS -->
     <link 
         href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" 
         rel="stylesheet">
     
+    <!-- Custom CSS for the notification -->
+    <style>
+        /* This CSS ensures the bar is fixed at the bottom and hidden by default */
+        #offline-notification-bar {
+            display: none; /* Hide by default */
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1050; /* Above Bootstrap modals */
+            border-radius: 0;
+            margin: 0;
+            padding: 10px;
+            text-align: center;
+        }
+    </style>
 </head>
 
 <body class="bg-light">
 
+    <!-- OFFLINE NOTIFICATION BAR -->
+    <div id="offline-notification-bar" class="alert alert-warning mb-0" role="alert">
+        <svg xmlns="www.w3.org" width="16" height="16" fill="currentColor" class="bi bi-wifi-off me-2" viewBox="0 0 16 16">
+            <path d="M10.744 3.97l4.004 7.276a1.36 1.36 0 0 1-.418 1.85C13.655 13.513 12.115 14 10.5 14a8.47 8.47 0 0 1-2.72-.472l1.62-.872c.453.811.965 1.54 1.505 2.15l.006.007a.9.9 0 0 1 1.258-.046l.04-.04a.8.8 0 0 1 0 1.131l-.8.8a.8.8 0 0 1-1.13 0l-.04-.04a.9.9 0 0 1-.047-1.258c-.517-.582-1.055-1.196-1.608-1.832-.803.54-1.637.927-2.499 1.144A8.32 8.32 0 0 1 5.5 14c-1.573 0-3.02-.45-4.16-1.21L5.5 7.118l-.904.487a8.553 8.553 0 0 1-2.976-.628.79.79 0 0 1-.585-.807.8.8 0 0 1 .2-.5l.092-.1a9 9 0 0 1 2.37-1.256l1.833-3.332C3.125 1.76 1.523 2.164.843 3.02a1.36 1.36 0 0 0-.419 1.85l-.03.05a1.3 1.3 0 0 0 .1 1.3l.03.05L4.4 9.173l.86-.464 1.848 3.35a7.487 7.487 0 0 0 2.217-.67l-.843-1.53c-.352.12-.72.23-1.1.33a.79.79 0 0 1-.806-.584.8.8 0 0 1 .5-.794l.1-.03c.48-.142.974-.29 1.48-.445L8.9 7.747l-1.92-3.484a.8.8 0 0 1 .15-.9c.32-.23.71-.345 1.1-.345h.001c.39 0 .78.115 1.1.345.158.114.246.29.246.476a.8.8 0 0 1-.15.474l-1.4 2.536 1.1.594Z"/>
+        </svg>
+        You are currently offline. Reconnecting...
+    </div>
 
     <!-- MAIN CONTENT -->
     <div class="container">
@@ -30,6 +54,31 @@
     </script>
     <script src="https://unpkg.com/htmx.org@1.9.10"></script>
 
+    <!-- OFFLINE DETECTION JAVASCRIPT -->
+    <script>
+        // Get the notification element
+        const offlineBar = document.getElementById('offline-notification-bar');
+
+        // Function to show/hide the bar
+        function handleConnectionChange() {
+            if (navigator.onLine) {
+                // User is online: hide the bar
+                offlineBar.style.display = 'none';
+                console.log("Status: Online");
+            } else {
+                // User is offline: show the bar
+                offlineBar.style.display = 'block';
+                console.log("Status: Offline");
+            }
+        }
+
+        // Add event listeners for connection status changes
+        window.addEventListener('online', handleConnectionChange);
+        window.addEventListener('offline', handleConnectionChange);
+
+        // Run on page load to set the initial state
+        handleConnectionChange();
+    </script>
 
 </body>
 </html>

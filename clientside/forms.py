@@ -10,7 +10,9 @@ from .models import (
     Municipality,
     Barangay,
     Handler,
-    Number
+    Number,
+    Payment,
+    Invoice,
     )
 from django.core.exceptions import ValidationError
 
@@ -146,3 +148,15 @@ class AddNumberForm(forms.ModelForm):
         # Filter handlers belonging to this client only
         if client:
             self.fields['handler'].queryset = Handler.objects.filter(client_handler=client)
+
+
+class InvoiceForm(forms.ModelForm):
+    class Meta:
+        model = Invoice
+        fields = ['time', 'added_load', 'balance', 'reference_number']
+
+
+class PaymentForm(forms.ModelForm):
+    class Meta:
+        model = Payment
+        fields = ['time', 'paid_amount']

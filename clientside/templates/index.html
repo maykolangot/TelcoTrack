@@ -3,10 +3,17 @@
 {% block title %}Index{% endblock %}
 
 {% block content %}
-<h1>Welcome to Load Tracker Application to track the clients Load Payments and Invoices</h1>
 
+    <!-- Check if the database connection status is False -->
+    {% if not db_connected %}
+        <div class="alert alert-danger" role="alert" style="padding: 10px; margin-bottom: 20px;">
+            <strong>Warning:</strong> The application cannot connect to the database. 
+            Functionality may be limited until the server's internet/network connection is restored.
+        </div>
+    {% endif %}
 
+    <h1>Welcome to Load Tracker Application to track the clients Load Payments and Invoices</h1>
 
-<a class="btn btn-primary" type="button" href="{% url 'login' %}"> Login </a>
+    <a class="btn btn-primary" type="button" href="{% url 'login' %}"> Login </a>
 
 {% endblock %}

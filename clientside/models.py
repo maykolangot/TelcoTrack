@@ -2,6 +2,7 @@ from django.db import models
 import uuid
 from django.conf import settings
 from django.core.exceptions import ValidationError
+from django.db.models import Sum
 
 
 
@@ -139,8 +140,13 @@ class Number(models.Model):
     operator = models.ForeignKey(Operator, on_delete=models.CASCADE)
     client = models.ForeignKey(Client, on_delete=models.CASCADE)
     handler = models.ForeignKey(Handler, on_delete=models.CASCADE)
-    collection_day = models.CharField(choices=COLLECTION_DAY_CHOICES)
+    collection_day = models.CharField(max_length=10, choices=COLLECTION_DAY_CHOICES)
 
+    @property
+    def current_balance(self):
+        total_invoice = self.invoices.aggregate(total=Sum('balance'))['total'] or 0
+        total_payment = self.payments.aggregate(total=Sum('paid_amount'))['total'] or 0
+        return total_invoice - total_payment
 
     def __str__(self):
         return f"{ self.number } ----- { self.operator.name } ----- { self.client.name } -----{ self.client.user_client }"
@@ -149,6 +155,7 @@ class Number(models.Model):
 
 # Computational
 class Invoice(models.Model):
+    number = models.ForeignKey(Number, on_delete=models.CASCADE, related_name="invoices")
     time = models.DateTimeField(auto_now_add=False)
     added_load = models.DecimalField(max_digits=10, decimal_places=2)
     balance = models.DecimalField(max_digits=10, decimal_places=2)
@@ -159,43 +166,13 @@ class Invoice(models.Model):
 
 
 class Payment(models.Model):
+    number = models.ForeignKey(Number, on_delete=models.CASCADE, related_name="payments")
     time = models.DateTimeField(auto_now_add=False)
     paid_amount = models.DecimalField(max_digits=10, decimal_places=2)
-    balance = models.DecimalField(max_digits=10, decimal_places=2)
 
     def __str__(self):
         return f"Payment {self.id}"
 
-
-class Balance(models.Model):
-    number = models.ForeignKey(Number, on_delete=models.CASCADE)
-
-    invoice = models.ForeignKey(
-        Invoice,
-        on_delete=models.CASCADE,
-        related_name="invoice_balances"
-    )
-
-    payment = models.ForeignKey(
-        Payment,
-        on_delete=models.CASCADE,
-        null=True,
-        blank=True,
-        related_name="payment_balances"
-    )
-
-    outstanding_balance = models.DecimalField(max_digits=10, decimal_places=2, default=0)
-    paid_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0)
-    total = models.DecimalField(max_digits=10, decimal_places=2, default=0)
-
-    def save(self, *args, **kwargs):
-        self.outstanding_balance = self.invoice.balance
-        self.paid_amount = self.payment.paid_amount if self.payment else 0
-        self.total = self.outstanding_balance - self.paid_amount
-        super().save(*args, **kwargs)
-
-    def __str__(self):
-        return f"Balance for {self.number}"
 
 
 

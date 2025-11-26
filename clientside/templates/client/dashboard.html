@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% block content %}
 {% include 'navbar.html' %}
+<title>{% block title %}Dashboard{% endblock %}</title>
 
 <div class="container my-4">
     <h2 class="mb-3">Welcome to the dashboard {{user}}!!</h2>

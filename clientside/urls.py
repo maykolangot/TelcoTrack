@@ -25,7 +25,10 @@ from .views import (
     search_number_page,
 
 
-    payment_invoice_page
+    payment_invoice_page,
+    add_invoice,
+    add_payment,
+    hx_history_table,
     )
 
 urlpatterns = [
@@ -59,12 +62,17 @@ urlpatterns = [
 
     path("numbers/", number_page, name="number-page"),
     path("numbers/<uuid:number_id>/", number_detail, name="number-detail"),
+    path("numbers/<uuid:number_id>/add-invoice/", add_invoice, name="add-invoice"),
+    path("numbers/<uuid:number_id>/add-payment/", add_payment, name="add-payment"),
+
+
     path("numbers/<uuid:number_id>/edit/", edit_number, name="edit-number"),
 
     path("numbers/search/", search_number_page, name="search-number"),
 
 
     path("payments/", payment_invoice_page, name='payment-page' ),
+    path("numbers/<uuid:number_id>/history/", hx_history_table, name="hx-history-table"),
 
 
 
