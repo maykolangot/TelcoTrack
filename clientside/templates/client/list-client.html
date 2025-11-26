@@ -5,23 +5,29 @@
 
 {% include 'navbar.html' %}
 
-<script src="https://unpkg.com/htmx.org@1.9.10"></script>
 
-<h1>My Clients</h1>  <a href="{% url 'create-client' %}">Add a Client</a>
+<div class="container my-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h1 class="h3">My Clients</h1>
+        <a href="{% url 'create-client' %}" class="btn btn-primary">Add Client</a>
+    </div>
 
-<!-- Search bar -->
-<input 
-    type="text"
-    name="search"
-    placeholder="Search client by name…"
-    hx-get="{% url 'search-clients' %}"
-    hx-trigger="keyup changed delay:300ms"
-    hx-target="#client-results"
-    class="form-control"
-/>
+    <!-- Search bar -->
+    <div class="mb-3">
+        <input 
+            type="text"
+            name="search"
+            placeholder="Search client by name…"
+            hx-get="{% url 'search-clients' %}"
+            hx-trigger="keyup changed delay:300ms"
+            hx-target="#client-results"
+            class="form-control"
+        />
+    </div>
 
-<div id="client-results">
-    {% include "client/partials/client_list.html" with clients=clients %}
+    <div id="client-results">
+        {% include "client/partials/client_list.html" with clients=clients %}
+    </div>
 </div>
 
 {% endblock %}

@@ -3,10 +3,28 @@
 {% block content %}
 {% include 'navbar.html' %}
 
-<h2>Number Page</h2>
+<div class="container my-4">
+    <h2 class="mb-3">Number Page</h2>
 
+    <!-- Search Section -->
+    <div class="mb-4">
+        <label for="search-number" class="form-label">Search Number</label>
+        <input 
+            type="text"
+            id="search-number"
+            name="q"
+            placeholder="Search number…"
+            class="form-control"
+            hx-get="{% url 'search-number' %}"
+            hx-trigger="keyup changed delay:300ms"
+            hx-target="#results"
+            hx-indicator="#loading"
+        >
+        <div id="loading" class="htmx-indicator mt-2 text-muted">Searching…</div>
+    </div>
 
-
-
+    <!-- Results -->
+    <div id="results"></div>
+</div>
 
 {% endblock %}

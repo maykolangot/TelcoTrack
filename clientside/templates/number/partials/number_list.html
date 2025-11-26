@@ -1,10 +1,21 @@
 <ul class="list-group">
     {% for number in numbers %}
         <a href="{% url 'number-detail' number.id %}" 
-           class="list-group-item list-group-item-action">
+           class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+
             <strong>{{ number.number }}</strong>
-            <span class="text-muted">— {{ number.operator.name }}</span>
-            <span class="text-muted">— {{ number.sim_status }}</span>
+
+            <span class="text-muted">{{ number.operator.name }}</span>
+
+            <span class="text-muted">{{ number.sim_status }}</span>
+
+            <span class="text-muted">
+                {% if number.handler %}
+                    {{ number.handler.name }}
+                {% else %}
+                    No Handler
+                {% endif %}
+            </span>
         </a>
     {% empty %}
         <li class="list-group-item">No numbers found.</li>

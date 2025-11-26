@@ -22,6 +22,10 @@ from .views import (
 
 
     number_page,
+    search_number_page,
+
+
+    payment_invoice_page
     )
 
 urlpatterns = [
@@ -56,6 +60,11 @@ urlpatterns = [
     path("numbers/", number_page, name="number-page"),
     path("numbers/<uuid:number_id>/", number_detail, name="number-detail"),
     path("numbers/<uuid:number_id>/edit/", edit_number, name="edit-number"),
+
+    path("numbers/search/", search_number_page, name="search-number"),
+
+
+    path("payments/", payment_invoice_page, name='payment-page' ),
 
 
 

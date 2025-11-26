@@ -2,69 +2,84 @@
 
 {% block content %}
 
-
+{% load widget_tweaks %}
 {% include 'navbar.html' %}
-<h1>Create a client</h1>
 
-<form method="POST">
-    {% csrf_token %}
+<div class="container my-4">
+    <h1 class="mb-4">Create a Client</h1>
 
-    <!-- REGION -->
-    <label>Region</label>
-    <select 
-        name="region"
-        id="id_region"
-        hx-get="{% url 'load-provinces' %}"
-        hx-target="#province-container"
-        hx-trigger="change"
-    >
-        <option value="">---------</option>
-        {% for region in regions %}
-        <option value="{{ region.id }}">{{ region.name }}</option>
-        {% endfor %}
-    </select>
+    <form method="POST" class="row g-3">
+        {% csrf_token %}
 
-    <!-- PROVINCE -->
-    <div id="province-container">
-        {% include 'client/partials/province_dropdown.html' with provinces=None %}
-    </div>
+        <!-- REGION -->
+        <div class="col-md-6">
+            <label for="id_region" class="form-label">Region</label>
+            <select 
+                name="region"
+                id="id_region"
+                class="form-select"
+                hx-get="{% url 'load-provinces' %}"
+                hx-target="#province-container"
+                hx-trigger="change"
+            >
+                <option value="">---------</option>
+                {% for region in regions %}
+                <option value="{{ region.id }}">{{ region.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
 
-    <!-- MUNICIPALITY -->
-    <div id="municipality-container">
-        {% include 'client/partials/municipality_dropdown.html' with municipalities=None %}
-    </div>
+        <!-- PROVINCE -->
+        <div class="col-md-6" id="province-container">
+            {% include 'client/partials/province_dropdown.html' with provinces=None %}
+        </div>
 
-    <!-- BARANGAY -->
-    <div id="barangay-container">
-        {% include 'client/partials/barangay_dropdown.html' with barangays=None %}
-    </div>
+        <!-- MUNICIPALITY -->
+        <div class="col-md-6" id="municipality-container">
+            {% include 'client/partials/municipality_dropdown.html' with municipalities=None %}
+        </div>
 
-    <div>
-        <h1>Street and House Number (Optional): </h1> {{ form.house_number_street }}
-    </div>
-    <!-- OTHER CLIENT FIELDS -->
-    <div>
-        <h1>name: </h1> {{ form.name }}
-    </div>
+        <!-- BARANGAY -->
+        <div class="col-md-6" id="barangay-container">
+            {% include 'client/partials/barangay_dropdown.html' with barangays=None %}
+        </div>
 
-    <div>
-        <h1>Trade Name: </h1> {{ form.trade_name }}
-    </div>
-    <div>
-        <h1>Contact Number: </h1>{{ form.contact_number }}
-    </div>
-    <div>
-        <h1>Status: </h1> {{ form.status }}
-    </div>
-    <div>
-        <h1>Application Date: </h1> {{ form.application_date }}
-    </div>
+        <!-- STREET & HOUSE NUMBER -->
+        <div class="col-md-12">
+            <label for="{{ form.house_number_street.id_for_label }}" class="form-label">Street and House Number (Optional)</label>
+            {{ form.house_number_street|add_class:"form-control" }}
+        </div>
 
+        <!-- OTHER CLIENT FIELDS -->
+        <div class="col-md-6">
+            <label for="{{ form.name.id_for_label }}" class="form-label">Name</label>
+            {{ form.name|add_class:"form-control" }}
+        </div>
 
-    <button type="submit">Save Client</button>
-</form>
+        <div class="col-md-6">
+            <label for="{{ form.trade_name.id_for_label }}" class="form-label">Trade Name</label>
+            {{ form.trade_name|add_class:"form-control" }}
+        </div>
 
+        <div class="col-md-6">
+            <label for="{{ form.contact_number.id_for_label }}" class="form-label">Contact Number</label>
+            {{ form.contact_number|add_class:"form-control" }}
+        </div>
 
- 
+        <div class="col-md-6">
+            <label for="{{ form.status.id_for_label }}" class="form-label">Status</label>
+            {{ form.status|add_class:"form-select" }}
+        </div>
+
+        <div class="col-md-6">
+            <label for="{{ form.application_date.id_for_label }}" class="form-label">Application Date</label>
+            {{ form.application_date|add_class:"form-control" }}
+        </div>
+
+        <div class="col-12">
+            <button type="submit" class="btn btn-success">Save Client</button>
+        </div>
+    </form>
+</div>
 
 {% endblock %}

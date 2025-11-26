@@ -3,6 +3,10 @@ from django.contrib.auth import authenticate
 from django.contrib.auth.models import auth
 from django.contrib.auth.decorators import login_required
 
+from django.http import HttpResponse
+from django.template.loader import render_to_string
+
+
 from .models import (
     Region,
     Province,
@@ -63,7 +67,6 @@ def dashboard(request):
     return render(request, 'client/dashboard.html')
 
 
-
 def user_logout(request):
     auth.logout(request)
     messages.success(request, "User logout successfull!!y")
@@ -89,7 +92,7 @@ def load_municipalities(request):
 
 def load_barangays(request):
     municipality_id = request.GET.get("municipality")
-    barangays = Barangay.objects.filter(municipality_id=municipality_id).order_by('-id')
+    barangays = Barangay.objects.filter(municipality_id=municipality_id).order_by('name')
     return render(request, "client/partials/barangay_dropdown.html", {
         "barangays": barangays
     })
@@ -138,7 +141,6 @@ def list_client(request):
     })
 
 
-
 def client_detail(request, client_id):
     client = Client.objects.get(id=client_id, user_client=request.user)
     handlers = Handler.objects.filter(client_handler=client)
@@ -152,7 +154,6 @@ def client_detail(request, client_id):
         "numbers": numbers,
         "operators": operators,
     })
-
 
 
 def add_handler(request, client_id):
@@ -249,9 +250,6 @@ def add_number(request, client_id):
     return render(request, 'number/add_number.html', {"form": form, "client": client})
 
 
-from django.http import HttpResponse
-from django.template.loader import render_to_string
-
 def number_search(request, client_id):
 
     client = get_object_or_404(Client, id=client_id)
@@ -302,3 +300,61 @@ def number_page(request):
     return render(request, "number/number.html")
 
 
+def normalize_number(raw):
+    raw = str(raw).strip()
+
+    # +63XXXXXXXXXX → remove +63
+    if raw.startswith("+63"):
+        raw = raw[3:]
+
+    # 09XXXXXXXXX → drop leading 0
+    if raw.startswith("0") and len(raw) == 11:
+        raw = raw[1:]
+
+    return raw
+
+
+@login_required
+def search_number_page(request):
+    query = request.GET.get("q", "").strip()
+
+    if query == "":
+        # ⬅ default: list all numbers from this user's clients
+        results = Number.objects.filter(
+            client__user_client=request.user
+        ).select_related("client", "operator")
+
+    else:
+        # ⬅ perform search
+        normalized = normalize_number(query)
+
+        results = Number.objects.filter(
+            number__icontains=normalized,
+            client__user_client=request.user
+        ).select_related("client", "operator")
+
+    return render(request, "number/partials/number_results.html", {
+        "results": results
+    })
+
+
+@login_required
+def payment_invoice(request, number_id):
+    # Only fetch if the number belongs to the logged-in user's client
+    number_obj = get_object_or_404(
+        Number.objects.select_related("client", "operator", "handler"),
+        id=number_id,
+        client__user_client=request.user
+    )
+
+    # Load invoice/payment data here (optional)
+    # payments = Payment.objects.filter(number=number_obj)
+
+    return render(request, "payments/payment_invoice.html", {
+        "number": number_obj,
+        # "payments": payments,
+    })
+
+
+def payment_invoice_page(request):
+    return render(request, "payments/payment_invoice.html")

@@ -41,6 +41,7 @@ INSTALLED_APPS = [
 
     'clientside',
     'phil_loc',
+    'widget_tweaks',
 ]
 
 MIDDLEWARE = [

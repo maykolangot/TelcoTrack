@@ -1,35 +1,53 @@
-
-
 {% extends "base.html" %}
 
 {% block content %}
-
+{% load widget_tweaks %}
 {% include 'navbar.html' %}
 
-<h2>Add Number for {{ client.trade_name }}</h2>
+<div class="container my-4">
+    <h2 class="mb-4">Add Number for {{ client.trade_name }}</h2>
 
-<form method="POST">
-    {% csrf_token %}
+    <form method="POST" class="row g-3">
+        {% csrf_token %}
 
-    <label>Number:</label>
-    {{ form.number }}
+        <!-- Number -->
+        <div class="col-md-6">
+            <label for="{{ form.number.id_for_label }}" class="form-label">Number</label>
+            {{ form.number|add_class:"form-control" }}
+        </div>
 
-    <label>SIM Status:</label>
-    {{ form.sim_status }}
+        <!-- SIM Status -->
+        <div class="col-md-6">
+            <label for="{{ form.sim_status.id_for_label }}" class="form-label">SIM Status</label>
+            {{ form.sim_status|add_class:"form-select" }}
+        </div>
 
-    <label>Collection Day:</label>
-    {{ form.collection_day }}
+        <!-- Collection Day -->
+        <div class="col-md-6">
+            <label for="{{ form.collection_day.id_for_label }}" class="form-label">Collection Day</label>
+            {{ form.collection_day|add_class:"form-select" }}
+        </div>
 
-    <label>Handler:</label>
-    {{ form.handler }}
+        <!-- Handler -->
+        <div class="col-md-6">
+            <label for="{{ form.handler.id_for_label }}" class="form-label">Handler</label>
+            {{ form.handler|add_class:"form-select" }}
+        </div>
 
-    <button type="submit">Add Number</button>
-</form>
+        <!-- Submit Button -->
+        <div class="col-12">
+            <button type="submit" class="btn btn-success">Add Number</button>
+        </div>
 
-{% if form.errors %}
-    <div style="color: red;">
-        {{ form.errors }}
-    </div>
-{% endif %}
+        <!-- Form Errors -->
+        {% if form.errors %}
+            <div class="col-12">
+                <div class="alert alert-danger">
+                    {{ form.errors }}
+                </div>
+            </div>
+        {% endif %}
+    </form>
+</div>
 
 {% endblock %}

@@ -1,15 +1,19 @@
-<label>Province</label>
-<select 
-    name="province"
-    id="id_province"
-    hx-get="{% url 'load-municipalities' %}"
-    hx-target="#municipality-container"
-    hx-trigger="change"
->
-    <option value="">---------</option>
-    {% if provinces %}
-        {% for p in provinces %}
-        <option value="{{ p.id }}">{{ p.name }}</option>
-        {% endfor %}
-    {% endif %}
-</select>
+<!-- PROVINCE -->
+<div class="mb-3">
+    <label for="id_province" class="form-label">Province</label>
+    <select 
+        name="province"
+        id="id_province"
+        class="form-select"
+        hx-get="{% url 'load-municipalities' %}"
+        hx-target="#municipality-container"
+        hx-trigger="change"
+    >
+        <option value="">---------</option>
+        {% if provinces %}
+            {% for p in provinces %}
+                <option value="{{ p.id }}">{{ p.name }}</option>
+            {% endfor %}
+        {% endif %}
+    </select>
+</div>

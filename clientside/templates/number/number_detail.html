@@ -3,20 +3,21 @@
 {% block content %}
 {% include 'navbar.html' %}
 
-<h2>Number Details</h2>
+<div class="container my-4">
+    <h2 class="mb-4">Number Details</h2>
 
-<p><strong>Number:</strong> {{ number.number }}</p>
-<p><strong>Operator:</strong> {{ number.operator.name }}</p>
-<p><strong>SIM Status:</strong> {{ number.sim_status }}</p>
-<p><strong>Collection Day:</strong> {{ number.collection_day }}</p>
-<p><strong>Client:</strong> {{ number.client.name }}</p>
+    <div class="p-4 border rounded shadow-sm mb-4">
+        <p><strong>Number:</strong> <span class="fs-5">{{ number.number }}</span></p>
+        <p><strong>Operator:</strong> {{ number.operator.name }}</p>
+        <p><strong>SIM Status:</strong> {{ number.sim_status }}</p>
+        <p><strong>Collection Day:</strong> {{ number.collection_day }}</p>
+        <p><strong>Client:</strong> {{ number.client.name }}</p>
+    </div>
 
-<a href="{% url 'edit-number' number.id %}" class="btn btn-primary mt-3">
-    Edit Number
-</a>
-
-<a href="javascript:history.back()" class="btn btn-secondary">Back</a>
-
-
+    <div class="d-flex gap-2">
+        <a href="{% url 'edit-number' number.id %}" class="btn btn-primary">Edit Number</a>
+        <a href="javascript:history.back()" class="btn btn-secondary">Back</a>
+    </div>
+</div>
 
 {% endblock %}

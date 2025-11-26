@@ -4,95 +4,98 @@
 
 {% include 'navbar.html' %}
 
+<div class="container my-4">
 
-<div>
-    <h2>{{ client.name }}</h2>
+    <!-- Top Row: Full-width Client Profile -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="p-4 border rounded shadow-sm">
+                <h2 class="mb-3">{{ client.name }}</h2>
+                <p><strong>Trade Name:</strong> {{ client.trade_name }}</p>
+                <p><strong>Contact:</strong> {{ client.contact_number }}</p>
+                <p><strong>Status:</strong> {{ client.status }}</p>
+                <p><strong>Application Date:</strong> {{ client.application_date }}</p>
 
-    <p><strong>Trade Name:</strong> {{ client.trade_name }}</p>
-    <p><strong>Contact:</strong> {{ client.contact_number }}</p>
-    <p><strong>Status:</strong> {{ client.status }}</p>
-    <p><strong>Application Date:</strong> {{ client.application_date }}</p>
-
-    <h3>Address</h3>
-    <p>
-        {{ client.primary_address.house_number_street }}<br>
-        {{ client.primary_address.barangay }}<br>
-        {{ client.primary_address.municipality }}<br>
-        {{ client.primary_address.province }}<br>
-        {{ client.primary_address.region }}
-    </p>
-
-</div>
-
-
-
-
-<div>
-
-<h3>Handlers</h3>
-
-    <a href="{% url 'add-handler' client.id %}" class="btn btn-primary mb-2">
-        Add Handler
-    </a>
-
-    {% if handlers %}
-        <ul class="list-group mb-3">
-            {% for handler in handlers %}
-                <a href="{% url 'edit-handler' client.id handler.id %}" class="list-group-item list-group-item-action">
-                    <strong>{{ handler.name }}</strong>
-                    <span class="text-muted">— {{ handler.contact }}</span>
-                </a>
-            {% endfor %}
-        </ul>
-    {% else %}
-        <p>No handlers added for this client yet.</p>
-    {% endif %}
-</div>
-
-
-
-<div>
-    <h3>Numbers</h3>
-
-<a href="{% url 'add-number' client.id %}" class="btn btn-primary mb-2">
-    Add Number
-</a>
-
-<div class="mb-3">
-    <input 
-        type="text" 
-        name="search" 
-        placeholder="Search number…" 
-        hx-get="{% url 'number-search' client.id %}"
-        hx-target="#number-list"
-        hx-trigger="keyup changed delay:300ms"
-        class="form-control"
-    >
-</div>
-
-    <div class="mb-3">
-        <select
-            name="operator"
-            hx-get="{% url 'number-search' client.id %}"
-            hx-target="#number-list"
-            class="form-select"
-        >
-            <option value="">All Operators</option>
-            {% for op in operators %}
-            <option value="{{ op.id }}">{{ op.name }}</option>
-            {% endfor %}
-        </select>
+                <h4 class="mt-4">Address</h4>
+                <p class="mb-0">
+                    {{ client.primary_address.house_number_street }},
+                    {{ client.primary_address.barangay }},
+                    {{ client.primary_address.municipality }}<br>
+                    {{ client.primary_address.province }}
+                    {{ client.primary_address.region }}
+                </p>
+            </div>
+        </div>
     </div>
 
-    <div id="number-list">
-        {% include 'number/partials/number_list.html' %}
+    <!-- Second Row: Numbers (left) and Handlers (right) -->
+    <div class="row">
+        <!-- Numbers Column (Left) -->
+        <div class="col-md-6 mb-4">
+            <div class="p-3 border rounded shadow-sm">
+                <h4 class="mb-3">Numbers</h4>
+                <a href="{% url 'add-number' client.id %}" class="btn btn-primary mb-3">Add Number</a>
+
+                <div class="row g-3 mb-3">
+                    <div class="col-12">
+                        <input 
+                            type="text" 
+                            name="search" 
+                            placeholder="Search number…" 
+                            hx-get="{% url 'number-search' client.id %}"
+                            hx-target="#number-list"
+                            hx-trigger="keyup changed delay:300ms"
+                            class="form-control"
+                        >
+                    </div>
+
+                    <div class="col-12">
+                        <select
+                            name="operator"
+                            hx-get="{% url 'number-search' client.id %}"
+                            hx-target="#number-list"
+                            class="form-select"
+                        >
+                            <option value="">All Operators</option>
+                            {% for op in operators %}
+                                <option value="{{ op.id }}">{{ op.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+
+                <div id="number-list">
+                    {% include 'number/partials/number_list.html' %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Handlers Column (Right) -->
+        <div class="col-md-6 mb-4">
+            <div class="p-3 border rounded shadow-sm">
+                <h4 class="mb-3">Handlers</h4>
+                <a href="{% url 'add-handler' client.id %}" class="btn btn-primary mb-3">Add Handler</a>
+
+                {% if handlers %}
+                    <ul class="list-group">
+                        {% for handler in handlers %}
+                            <a href="{% url 'edit-handler' client.id handler.id %}" 
+                               class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                                <span class="fw-bold">{{ handler.name }}</span>
+                                <span class="text-muted">{{ handler.client_handler.trade_name }}</span>
+                                
+                            </a>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <div class="alert alert-info">No handlers added for this client yet.</div>
+                {% endif %}
+            </div>
+        </div>
     </div>
 
+    <a href="{% url 'clients' %}" class="btn btn-secondary">Back to list</a>
+
 </div>
-
-
-<a href="{% url 'clients' %}" class="btn btn-secondary">Back to list</a>
-
-
 
 {% endblock %}
