@@ -1,15 +1,20 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth import authenticate
+from django.contrib.auth import authenticate, login
 from django.contrib.auth.models import auth
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.http import HttpResponse
 from django.template.loader import render_to_string
 from django.urls import reverse
-from django.utils import timezone
 from django.core.paginator import Paginator
 from django.db.utils import OperationalError
 from django.db import connection
+from django.core.cache import cache
+
+# Time Aware using the TIME_ZONE on Settings
+from django.utils import timezone
+from django.utils.timezone import timedelta
+
 
 from .models import (
     Region,
@@ -57,32 +62,114 @@ def index(request):
     }
     
     return render(request, "index.html", context)
+
+
+MAX_ATTEMPTS = 5               # allowed failed attempts
+LOCKOUT_TIME = 100             # seconds (5 minutes)
+
+def get_client_ip(request):
+    """Handles reverse-proxy / nginx / cloudflare scenarios."""
+    x_forwarded_for = request.META.get("HTTP_X_FORWARDED_FOR")
+    if x_forwarded_for:
+        return x_forwarded_for.split(",")[0]
+    return request.META.get("REMOTE_ADDR")
+
+
 def my_login(request):
-    form = LoginForm()
+    ip = request.META.get("REMOTE_ADDR")
+    cache_key = f"login_attempts_{ip}"
+    attempts = cache.get(cache_key, 0)
+
+    form = LoginForm(request)
+
+    # If locked out
+    if attempts >= MAX_ATTEMPTS:
+        messages.error(request, "Too many failed attempts. Try again in 5 minutes.")
+        return render(request, 'login.html', {'form': form})
 
     if request.method == "POST":
-
         form = LoginForm(request, data=request.POST)
-        if form.is_valid():
 
-            username = request.POST.get('username')
-            password = request.POST.get('password')
-            user = authenticate(request, username=username, password=password)
+        username = request.POST.get("username")
+        password = request.POST.get("password")
 
-            if user is not None:
-                auth.login(request, user)
-                messages.success(request, "You Have logged in successfully")
+        # First check credentials (rate limiter applies to failed auth)
+        user = authenticate(request, username=username, password=password)
 
-                return redirect("dashboard")
-    
-    context = {'form':form}
+        if user is not None:
+            login(request, user)
+            cache.delete(cache_key)
+            messages.success(request, "You have logged in successfully.")
+            return redirect("dashboard")
 
-    return render(request, 'login.html', context=context)
+        # FAILED LOGIN → increment limiter
+        attempts += 1
+        cache.set(cache_key, attempts, LOCKOUT_TIME)
+
+        remaining = MAX_ATTEMPTS - attempts
+
+        if remaining <= 0:
+            messages.error(request, "Too many failed attempts. Try again in 5 minutes.")
+        else:
+            messages.error(request, f"Invalid login. {remaining} attempts remaining.")
+
+        # Still render invalid form with errors
+        # IMPORTANT: Do not add extra message here
+
+    return render(request, 'login.html', {'form': form})
 
 
-@login_required(login_url='my-login')
+@login_required(login_url='login')
 def dashboard(request):
-    return render(request, 'client/dashboard.html')
+    user = request.user
+
+    # A user may have multiple clients
+    client_list = user.clients.all()
+
+    if not client_list.exists():
+        return render(request, "client/dashboard.html", {"numbers": []})
+
+    # Use Django-aware local date (respects Asia/Manila timezone)
+    today = timezone.localdate()
+
+    today_name = today.strftime("%A")
+    prev_day_name = (today - timedelta(days=1)).strftime("%A")
+    next_day_name = (today + timedelta(days=1)).strftime("%A")
+
+    # Read which day to filter
+    requested_day = request.GET.get("day", "today")
+
+    if requested_day == "prev":
+        selected_day = prev_day_name
+    elif requested_day == "next":
+        selected_day = next_day_name
+    else:
+        selected_day = today_name  # default
+
+    # Show all toggle
+    show_all = request.GET.get("show") == "all"
+
+    # Query numbers
+    base_qs = Number.objects.filter(
+        client__in=client_list,
+        sim_status="Active",
+        collection_day=selected_day
+    )
+
+    # Filter positive balance only unless show_all is ON
+    if not show_all:
+        base_qs = [n for n in base_qs if n.current_balance > 0]
+
+    context = {
+        "numbers": base_qs,
+        "today": today_name,
+        "prev_day": prev_day_name,
+        "next_day": next_day_name,
+        "selected_day": selected_day,
+        "show_all": show_all,
+    }
+
+    return render(request, "client/dashboard.html", context)
 
 
 def user_logout(request):

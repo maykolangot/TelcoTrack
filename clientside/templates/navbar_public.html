@@ -1,0 +1,47 @@
+<!-- Public Navbar for Non-Authenticated Users -->
+<nav class="navbar navbar-expand-lg navbar-dark public-navbar shadow">
+  <div class="container">
+    <!-- Brand -->
+    <a class="navbar-brand fw-bold d-flex align-items-center" href="{% url 'index' %}">
+      <i class="bi bi-telephone me-2"></i>
+      TelcoTrack
+    </a>
+    
+    <!-- Mobile Toggle -->
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#publicNavbar">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <!-- Navigation Links -->
+    <div class="collapse navbar-collapse" id="publicNavbar">
+      <ul class="navbar-nav me-auto">
+        <li class="nav-item">
+          <a class="nav-link" href="#features">
+            <i class="bi bi-star me-1"></i>
+            Features
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#benefits">
+            <i class="bi bi-graph-up me-1"></i>
+            Benefits
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#contact">
+            <i class="bi bi-envelope me-1"></i>
+            Contact
+          </a>
+        </li>
+      </ul>
+      
+      <!-- Login/Register Buttons -->
+      <div class="d-flex">
+        <a class="btn btn-outline-light btn-sm me-2" href="{% url 'login' %}">
+          <i class="bi bi-box-arrow-in-right me-1"></i>
+          Login
+        </a>
+      </div>
+    </div>
+  </div>
+</nav>

@@ -1,19 +1,212 @@
 {% extends "base.html" %}
 
-{% block title %}Index{% endblock %}
+{% block title %}TelcoTrack - Professional Load Management{% endblock %}
 
 {% block content %}
 
-    <!-- Check if the database connection status is False -->
-    {% if not db_connected %}
-        <div class="alert alert-danger" role="alert" style="padding: 10px; margin-bottom: 20px;">
-            <strong>Warning:</strong> The application cannot connect to the database. 
-            Functionality may be limited until the server's internet/network connection is restored.
+    <!-- Hero Section -->
+    <div class="row align-items-center min-vh-100 bg-gradient-primary text-white py-5" style="margin-top: -1px;">
+        <div class="col-lg-8 mx-auto text-center py-5">
+            <h1 class="display-4 fw-bold mb-4">TelcoTrack</h1>
+            <p class="lead fs-4 mb-4">
+                Professional Load Payment & Invoice Tracking Solution
+            </p>
+            <p class="fs-5 mb-5 opacity-90">
+                Streamline your client management, track payments, and automate invoice generation 
+                with our comprehensive telecommunications load tracking platform.
+            </p>
+            
+            {% if not user.is_authenticated %}
+            <div class="d-grid gap-3 d-md-flex justify-content-md-center">
+                <a class="btn btn-light btn-lg px-5 py-3 fw-semibold" href="{% url 'login' %}">
+                    <i class="bi bi-box-arrow-in-right me-2"></i>
+                    Login to Dashboard
+                </a>
+                <a class="btn btn-outline-light btn-lg px-5 py-3 fw-semibold" href="#features">
+                    <i class="bi bi-info-circle me-2"></i>
+                    Learn More
+                </a>
+            </div>
+            {% else %}
+            <div class="d-grid gap-3 d-md-flex justify-content-md-center">
+                <a class="btn btn-light btn-lg px-5 py-3 fw-semibold" href="{% url 'dashboard' %}">
+                    <i class="bi bi-speedometer2 me-2"></i>
+                    Go to Dashboard
+                </a>
+            </div>
+            {% endif %}
         </div>
-    {% endif %}
+    </div>
 
-    <h1>Welcome to Load Tracker Application to track the clients Load Payments and Invoices</h1>
+    <!-- Features Section -->
+    <div id="features" class="row py-5 bg-light">
+        <div class="col-lg-10 mx-auto">
+            <div class="text-center mb-5">
+                <h2 class="fw-bold text-primary mb-3">Powerful Features</h2>
+                <p class="fs-5 text-muted">Everything you need to manage client load payments efficiently</p>
+            </div>
+            
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="card h-100 border-0 shadow-sm">
+                        <div class="card-body text-center p-4">
+                            <div class="feature-icon bg-primary bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                                <i class="bi bi-people-fill text-primary fs-2"></i>
+                            </div>
+                            <h4 class="fw-semibold mb-3">Client Management</h4>
+                            <p class="text-muted">
+                                Organize and manage client information, contact details, and service history in one centralized platform.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-4">
+                    <div class="card h-100 border-0 shadow-sm">
+                        <div class="card-body text-center p-4">
+                            <div class="feature-icon bg-success bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                                <i class="bi bi-cash-coin text-success fs-2"></i>
+                            </div>
+                            <h4 class="fw-semibold mb-3">Payment Tracking</h4>
+                            <p class="text-muted">
+                                Monitor load payments, track balances, and generate real-time payment reports for better financial oversight.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-4">
+                    <div class="card h-100 border-0 shadow-sm">
+                        <div class="card-body text-center p-4">
+                            <div class="feature-icon bg-info bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                                <i class="bi bi-receipt text-info fs-2"></i>
+                            </div>
+                            <h4 class="fw-semibold mb-3">Invoice Automation</h4>
+                            <p class="text-muted">
+                                Automatically generate and manage invoices, reducing manual work and ensuring professional documentation.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-    <a class="btn btn-primary" type="button" href="{% url 'login' %}"> Login </a>
+    <!-- Benefits Section -->
+    <div id="benefits" class="row py-5 bg-white">
+        <div class="col-lg-10 mx-auto">
+            <div class="text-center mb-5">
+                <h2 class="fw-bold text-primary mb-3">Why Choose TelcoTrack?</h2>
+            </div>
+            <div class="row g-4">
+                <div class="col-md-6">
+                    <div class="d-flex">
+                        <i class="bi bi-check-circle-fill text-success fs-4 me-3"></i>
+                        <div>
+                            <h5>Save Time & Reduce Errors</h5>
+                            <p class="text-muted mb-0">Automate repetitive tasks and minimize manual data entry errors.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="d-flex">
+                        <i class="bi bi-check-circle-fill text-success fs-4 me-3"></i>
+                        <div>
+                            <h5>Professional Reporting</h5>
+                            <p class="text-muted mb-0">Generate clean, professional reports and invoices for your clients.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="d-flex">
+                        <i class="bi bi-check-circle-fill text-success fs-4 me-3"></i>
+                        <div>
+                            <h5>Real-time Insights</h5>
+                            <p class="text-muted mb-0">Get instant visibility into payment statuses and client balances.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="d-flex">
+                        <i class="bi bi-check-circle-fill text-success fs-4 me-3"></i>
+                        <div>
+                            <h5>Mobile Responsive</h5>
+                            <p class="text-muted mb-0">Access your data from anywhere, on any device.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats Section -->
+    <div class="row py-5 bg-primary text-white">
+        <div class="col-lg-8 mx-auto">
+            <div class="row text-center g-4">
+                <div class="col-md-3">
+                    <div class="p-3">
+                        <h3 class="fw-bold display-6">100+</h3>
+                        <p class="mb-0 opacity-90">Clients Managed</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="p-3">
+                        <h3 class="fw-bold display-6">24/7</h3>
+                        <p class="mb-0 opacity-90">System Availability</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="p-3">
+                        <h3 class="fw-bold display-6">99%</h3>
+                        <p class="mb-0 opacity-90">Accuracy Rate</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="p-3">
+                        <h3 class="fw-bold display-6">50%</h3>
+                        <p class="mb-0 opacity-90">Time Saved</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CTA Section -->
+    <div id="contact" class="row py-5 bg-light">
+        <div class="col-lg-6 mx-auto text-center">
+            <h3 class="fw-bold mb-3">Ready to Streamline Your Load Management?</h3>
+            <p class="mb-4 text-muted">Join professional telecommunications businesses using TelcoTrack</p>
+            <a class="btn btn-primary btn-lg px-5 fw-semibold" href="{% url 'login' %}">
+                Get Started Now <i class="bi bi-arrow-right ms-2"></i>
+            </a>
+        </div>
+    </div>
+
+<style>
+    .min-vh-100 {
+        min-height: 100vh;
+    }
+    
+    .bg-gradient-primary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+    
+    .feature-icon {
+        transition: transform 0.3s ease;
+    }
+    
+    .card:hover .feature-icon {
+        transform: scale(1.1);
+    }
+    
+    .btn {
+        transition: all 0.3s ease;
+    }
+    
+    .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+</style>
 
 {% endblock %}

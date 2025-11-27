@@ -1,11 +1,89 @@
 {% extends "base.html" %}
 {% block content %}
-{% include 'navbar.html' %}
+
+
 <title>{% block title %}Dashboard{% endblock %}</title>
 
 <div class="container my-4">
-    <h2 class="mb-3">Welcome to the dashboard {{user}}!!</h2>
+    <h2 class="mb-3">Welcome to the dashboard, {{ user }}!</h2>
 
+    <!-- FILTER BUTTONS -->
+    <div class="mb-3">
+        {% if show_all %}
+            <a href="?day={{ selected_day }}" class="btn btn-primary btn-sm">Show Balance Only</a>
+        {% else %}
+            <a href="?day={{ selected_day }}&show=all" class="btn btn-secondary btn-sm">Show All</a>
+        {% endif %}
+    </div>
+
+    <!-- DAY SWITCH BUTTONS -->
+    <div class="mb-3">
+        <div class="d-flex justify-content-between gap-2">
+            <a href="?day=prev{% if show_all %}&show=all{% endif %}" class="btn btn-outline-secondary btn-sm flex-fill text-nowrap">
+                ← Prev ({{ prev_day }})
+            </a>
+            <a href="?day=today{% if show_all %}&show=all{% endif %}" class="btn btn-outline-primary btn-sm flex-fill text-nowrap">
+                Today ({{ today }})
+            </a>
+            <a href="?day=next{% if show_all %}&show=all{% endif %}" class="btn btn-outline-secondary btn-sm flex-fill text-nowrap">
+                Next ({{ next_day }}) →
+            </a>
+        </div>
+    </div>
+
+    <!-- CURRENTLY SELECTED DAY -->
+    <h4 class="mt-4">
+        Showing schedule for:
+        <span class="text-primary">{{ selected_day }}</span>
+    </h4>
+
+    <hr>
+
+    {% if numbers %}
+        {% for number in numbers %}
+            <a href="{% url 'number-detail' number.id %}" class="text-decoration-none text-dark">
+                <div class="card mb-3 shadow-sm">
+                    <div class="card-body">
+
+                        <!-- FIRST ROW -->
+                        <div class="row">
+                            <div class="col-md-6">
+                                <strong>Trade Name:</strong> {{ number.client.trade_name }}
+                            </div>
+                            <div class="col-md-6 text-md-end mt-2 mt-md-0">
+                                <strong>Handler:</strong> {{ number.handler.name }}
+                            </div>
+                        </div>
+
+                        <!-- SECOND ROW (ADDRESS) -->
+                        <div class="mt-2">
+                            <strong>Address:</strong>
+                            {% if number.client.primary_address %}
+                                {{ number.client.primary_address.house_number_street }},
+                                {{ number.client.primary_address.barangay }},
+                                {{ number.client.primary_address.municipality }}
+                            {% else %}
+                                <em>No Address Available</em>
+                            {% endif %}
+                        </div>
+
+                        <!-- ADDITIONAL INFO -->
+                        <div class="row mt-3">
+                            <div class="col-md-6">
+                                <strong>Number:</strong> {{ number.number }}
+                            </div>
+                            <div class="col-md-6">
+                                <strong>Balance to Pay:</strong> <span class="text-danger">{{ number.current_balance }}</span>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </a>
+        {% endfor %}
+    {% else %}
+        <p>No scheduled collections available.</p>
+    {% endif %}
 </div>
 
 {% endblock %}

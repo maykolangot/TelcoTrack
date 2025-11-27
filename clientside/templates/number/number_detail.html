@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block content %}
-{% include 'navbar.html' %}
+
 <title>{% block title %}Number Detail{% endblock %}</title>
 <div class="container my-4">
 
@@ -14,7 +14,7 @@
         <p><strong>Operator:</strong> {{ number.operator.name }}</p>
         <p><strong>SIM Status:</strong> {{ number.sim_status }}</p>
         <p><strong>Collection Day:</strong> {{ number.collection_day }}</p>
-        <p><strong>Client:</strong> {{ number.client.name }}</p>
+        <p><strong>Client: <a href="{% url 'client-detail' number.client_id %}">{{ number.client.name }}</a> </strong> </p>
     </div>
 
     <!-- Action Buttons -->
