@@ -1,8 +1,8 @@
 <!-- BARANGAY -->
 <div class="mb-3" id="barangay-container">
-    <label for="id_barangay" class="form-label">Barangay</label>
-    <select name="barangay" id="id_barangay" class="form-select">
-        <option value="">---------</option>
+    <label for="id_barangay" class="form-label ">Barangay</label>
+    <select name="barangay" id="id_barangay" class="form-select form-select-lg">
+        <option value="">Select Baranggay</option>
         {% if barangays %}
             {% for b in barangays %}
                 <option value="{{ b.id }}">{{ b.name }}</option>

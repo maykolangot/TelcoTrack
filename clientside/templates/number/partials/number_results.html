@@ -1,17 +1,214 @@
 {% if results %}
-    <div class="list-group">
+    <div class="search-results">
         {% for item in results %}
-            <a href="/numbers/{{ item.id }}/" class="list-group-item list-group-item-action py-3 px-4">
-                <div class="d-flex justify-content-between align-items-center mb-1">
-                    <strong class="fs-5">{{ item.number }}</strong>
-                    <span class="text-muted">Operator: {{ item.operator.name }}</span>
+            <div class="search-result-card" onclick="window.location.href='/numbers/{{ item.id }}/'">
+                <div class="result-content">
+                    <div class="result-main">
+                        <div class="number-line">
+                            <i class="bi bi-phone me-2"></i>
+                            <strong class="number-text">{{ item.number }}</strong>
+                        </div>
+                        <div class="client-line">
+                            <i class="bi bi-person me-2"></i>
+                            <span class="client-name">{{ item.client.name }}</span>
+                        </div>
+                    </div>
+                    <div class="result-meta">
+                        <span class="operator-badge">{{ item.operator.name }}</span>
+                        <i class="bi bi-chevron-right ms-2"></i>
+                    </div>
                 </div>
-                <div class="fw-bold fs-6">Client: {{ item.client.name }}</div>
-            </a>
+            </div>
         {% endfor %}
     </div>
 {% else %}
-    <div class="alert alert-warning mt-3" role="alert">
-        No matching number found.
+    <div class="no-results">
+        <div class="no-results-icon">
+            <i class="bi bi-search"></i>
+        </div>
+        <h6 class="no-results-title">No numbers found</h6>
+        <p class="no-results-text">Try different search terms</p>
     </div>
 {% endif %}
+
+<style>
+.search-results {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-top: 0.75rem;
+}
+
+.search-result-card {
+    background: white;
+    border: 1px solid #e9ecef;
+    border-radius: 0.5rem;
+    padding: 0.75rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+}
+
+.search-result-card:hover {
+    border-color: #007bff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.result-content {
+    display: flex;
+    justify-content: between;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.result-main {
+    flex: 1;
+    min-width: 0; /* Allow text truncation */
+}
+
+.number-line {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.25rem;
+}
+
+.number-line i {
+    color: #007bff;
+    font-size: 0.9rem;
+    flex-shrink: 0;
+}
+
+.number-text {
+    font-size: 1rem;
+    color: #2c3e50;
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.client-line {
+    display: flex;
+    align-items: center;
+}
+
+.client-line i {
+    color: #6c757d;
+    font-size: 0.8rem;
+    flex-shrink: 0;
+}
+
+.client-name {
+    color: #495057;
+    font-size: 0.85rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.result-meta {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+.operator-badge {
+    background: rgba(108, 117, 125, 0.1);
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.375rem;
+    font-size: 0.75rem;
+    color: #6c757d;
+    font-weight: 500;
+    border: 1px solid rgba(108, 117, 125, 0.2);
+}
+
+.result-meta i {
+    color: #6c757d;
+    font-size: 0.8rem;
+}
+
+/* No Results State */
+.no-results {
+    text-align: center;
+    padding: 2rem 1rem;
+    background: #f8f9fa;
+    border-radius: 0.5rem;
+    margin-top: 0.75rem;
+}
+
+.no-results-icon {
+    width: 50px;
+    height: 50px;
+    background: rgba(108, 117, 125, 0.1);
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1rem;
+}
+
+.no-results-icon i {
+    font-size: 1.25rem;
+    color: #6c757d;
+}
+
+.no-results-title {
+    color: #495057;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+    font-size: 0.95rem;
+}
+
+.no-results-text {
+    color: #6c757d;
+    margin: 0;
+    font-size: 0.85rem;
+}
+
+/* Animation for results appearance */
+.search-result-card {
+    animation: slideInUp 0.3s ease-out;
+}
+
+@keyframes slideInUp {
+    from {
+        opacity: 0;
+        transform: translateY(5px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Extra small devices */
+@media (max-width: 375px) {
+    .search-result-card {
+        padding: 0.625rem;
+    }
+    
+    .number-text {
+        font-size: 0.95rem;
+    }
+    
+    .client-name {
+        font-size: 0.8rem;
+    }
+    
+    .operator-badge {
+        font-size: 0.7rem;
+        padding: 0.2rem 0.4rem;
+    }
+    
+    .no-results {
+        padding: 1.5rem 0.75rem;
+    }
+}
+
+/* Ensure touch targets are adequate */
+@media (max-width: 768px) {
+    .search-result-card {
+        min-height: 60px; /* Adequate touch target */
+    }
+}
+</style>

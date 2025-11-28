@@ -2,100 +2,255 @@
 
 {% block content %}
 
-
-
 <div class="container my-4">
 
-    <!-- Top Row: Full-width Client Profile -->
+    <!-- Client Profile Header -->
     <div class="row mb-4">
         <div class="col-12">
-            <div class="p-4 border rounded shadow-sm">
-                <h2 class="mb-3">{{ client.name }}</h2>
-                <p><strong>Trade Name:</strong> {{ client.trade_name }}</p>
-                <p><strong>Contact:</strong> {{ client.contact_number }}</p>
-                <p><strong>Status:</strong> {{ client.status }}</p>
-                <p><strong>Application Date:</strong> {{ client.application_date }}</p>
-
-                <h4 class="mt-4">Address</h4>
-                <p class="mb-0">
-                    {{ client.primary_address.house_number_street }},
-                    {{ client.primary_address.barangay }},
-                    {{ client.primary_address.municipality }}<br>
-                    {{ client.primary_address.province }}
-                    {{ client.primary_address.region }}
-                </p>
+            <div class="card border-0 shadow-lg">
+                <div class="card-header bg-gradient-primary text-white py-4">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h1 class="h2 mb-1 fw-bold">{{ client.name }}</h1>
+                            <p class="mb-0 opacity-75">{{ client.trade_name }}</p>
+                        </div>
+                        <span class="badge bg-white text-primary fs-6 px-3 py-2">
+                            <i class="bi bi-circle-fill me-1"></i>{{ client.status }}
+                        </span>
+                    </div>
+                </div>
+                <div class="card-body p-4">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="bg-light rounded-circle p-3 me-3">
+                                    <i class="bi bi-telephone text-primary fs-4"></i>
+                                </div>
+                                <div>
+                                    <small class="text-muted d-block">Contact Number</small>
+                                    <span class="fw-bold fs-5">{{ client.contact_number }}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="bg-light rounded-circle p-3 me-3">
+                                    <i class="bi bi-calendar-check text-primary fs-4"></i>
+                                </div>
+                                <div>
+                                    <small class="text-muted d-block">Application Date</small>
+                                    <span class="fw-bold fs-5">{{ client.application_date }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4 pt-3 border-top">
+                        <h5 class="text-primary mb-3">
+                            <i class="bi bi-geo-alt me-2"></i>Address
+                        </h5>
+                        <div class="bg-light rounded p-3">
+                            <p class="mb-0 fs-6">
+                                {{ client.primary_address.house_number_street }},
+                                {{ client.primary_address.barangay }},
+                                {{ client.primary_address.municipality }}<br>
+                                {{ client.primary_address.province }},
+                                {{ client.primary_address.region }}
+                            </p>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- Second Row: Numbers (left) and Handlers (right) -->
+    <!-- Numbers and Handlers Section -->
     <div class="row">
-        <!-- Numbers Column (Left) -->
+        <!-- Numbers Column -->
         <div class="col-md-6 mb-4">
-            <div class="p-3 border rounded shadow-sm">
-                <h4 class="mb-3">Numbers</h4>
-                <a href="{% url 'add-number' client.id %}" class="btn btn-primary mb-3">Add Number</a>
-
-                <div class="row g-3 mb-3">
-                    <div class="col-12">
-                        <input 
-                            type="text" 
-                            name="search" 
-                            placeholder="Search number…" 
-                            hx-get="{% url 'number-search' client.id %}"
-                            hx-target="#number-list"
-                            hx-trigger="keyup changed delay:300ms"
-                            class="form-control"
-                        >
-                    </div>
-
-                    <div class="col-12">
-                        <select
-                            name="operator"
-                            hx-get="{% url 'number-search' client.id %}"
-                            hx-target="#number-list"
-                            class="form-select"
-                        >
-                            <option value="">All Operators</option>
-                            {% for op in operators %}
-                                <option value="{{ op.id }}">{{ op.name }}</option>
-                            {% endfor %}
-                        </select>
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-white py-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h4 class="card-title mb-0 text-primary">
+                            <i class="bi bi-phone me-2"></i>Phone Numbers
+                        </h4>
+                        <a href="{% url 'add-number' client.id %}" class="btn btn-primary btn-sm">
+                            <i class="bi bi-plus-circle me-1"></i>Add Number
+                        </a>
                     </div>
                 </div>
+                <div class="card-body">
+                    <!-- Search and Filter -->
+                    <div class="row g-2 mb-3">
+                        <div class="col-12">
+                            <div class="input-group input-group-sm">
+                                <span class="input-group-text bg-light border-0">
+                                    <i class="bi bi-search text-muted"></i>
+                                </span>
+                                <input 
+                                    type="text" 
+                                    name="search" 
+                                    placeholder="Search numbers…" 
+                                    hx-get="{% url 'number-search' client.id %}"
+                                    hx-target="#number-list"
+                                    hx-trigger="keyup changed delay:300ms"
+                                    class="form-control border-0 bg-light"
+                                >
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <select
+                                name="operator"
+                                hx-get="{% url 'number-search' client.id %}"
+                                hx-target="#number-list"
+                                class="form-select form-select-sm border-0 bg-light"
+                            >
+                                <option value="">All Operators</option>
+                                {% for op in operators %}
+                                    <option value="{{ op.id }}">{{ op.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
 
-                <div id="number-list">
-                    {% include 'number/partials/number_list.html' %}
+                    <!-- Numbers List -->
+                    <div id="number-list" class="mt-3">
+                        {% include 'number/partials/number_list.html' %}
+                    </div>
                 </div>
             </div>
         </div>
 
-        <!-- Handlers Column (Right) -->
+        <!-- Handlers Column -->
         <div class="col-md-6 mb-4">
-            <div class="p-3 border rounded shadow-sm">
-                <h4 class="mb-3">Handlers</h4>
-                <a href="{% url 'add-handler' client.id %}" class="btn btn-primary mb-3">Add Handler</a>
-
-                {% if handlers %}
-                    <ul class="list-group">
-                        {% for handler in handlers %}
-                            <a href="{% url 'edit-handler' client.id handler.id %}" 
-                               class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
-                                <span class="fw-bold">{{ handler.name }}</span>
-                                <span class="text-muted">{{ handler.client_handler.trade_name }}</span>
-                                
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-white py-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h4 class="card-title mb-0 text-primary">
+                            <i class="bi bi-people me-2"></i>Handlers
+                        </h4>
+                        <a href="{% url 'add-handler' client.id %}" class="btn btn-primary btn-sm">
+                            <i class="bi bi-plus-circle me-1"></i>Add Handler
+                        </a>
+                    </div>
+                </div>
+                <div class="card-body">
+                    {% if handlers %}
+                        <div class="list-group list-group-flush">
+                            {% for handler in handlers %}
+                                <a href="{% url 'edit-handler' client.id handler.id %}" 
+                                   class="list-group-item list-group-item-action border-0 py-3 px-0">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div class="d-flex align-items-center">
+                                            <div class="bg-primary bg-opacity-10 rounded-circle p-2 me-3">
+                                                <i class="bi bi-person text-primary"></i>
+                                            </div>
+                                            <div>
+                                                <h6 class="mb-1 fw-bold text-dark">{{ handler.name }}</h6>
+                                                <small class="text-muted">{{ handler.client_handler.trade_name }}</small>
+                                            </div>
+                                        </div>
+                                        <i class="bi bi-chevron-right text-muted"></i>
+                                    </div>
+                                </a>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="text-center py-5">
+                            <div class="bg-light rounded-circle p-4 d-inline-block mb-3">
+                                <i class="bi bi-people fs-1 text-muted"></i>
+                            </div>
+                            <h5 class="text-muted">No Handlers</h5>
+                            <p class="text-muted mb-3">Add handlers to manage this client</p>
+                            <a href="{% url 'add-handler' client.id %}" class="btn btn-outline-primary">
+                                <i class="bi bi-plus-circle me-1"></i>Add First Handler
                             </a>
-                        {% endfor %}
-                    </ul>
-                {% else %}
-                    <div class="alert alert-info">No handlers added for this client yet.</div>
-                {% endif %}
+                        </div>
+                    {% endif %}
+                </div>
             </div>
         </div>
     </div>
 
-    <a href="{% url 'clients' %}" class="btn btn-secondary">Back to list</a>
+    <!-- Back Button -->
+    <div class="row">
+        <div class="col-12">
+            <a href="{% url 'clients' %}" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left me-2"></i>Back to Clients
+            </a>
+        </div>
+    </div>
 
 </div>
+
+<style>
+.bg-gradient-primary {
+    background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+}
+
+.card {
+    border-radius: 0.75rem;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+}
+
+.card-header {
+    border-radius: 0.75rem 0.75rem 0 0 !important;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.list-group-item {
+    transition: all 0.2s ease;
+    border-radius: 0.5rem !important;
+    margin-bottom: 0.5rem;
+}
+
+.list-group-item:hover {
+    background-color: #f8f9fa;
+    transform: translateX(5px);
+}
+
+.bg-light {
+    background-color: #f8f9fa !important;
+}
+
+.input-group-text {
+    border-radius: 0.5rem 0 0 0.5rem;
+}
+
+.form-control, .form-select {
+    border-radius: 0.5rem;
+    transition: all 0.2s ease;
+}
+
+.form-control:focus, .form-select:focus {
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.1);
+    border-color: #007bff;
+}
+
+.btn {
+    border-radius: 0.5rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #007bff, #0056b3);
+    border: none;
+}
+
+.btn-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
+}
+
+.badge {
+    border-radius: 0.5rem;
+    font-weight: 500;
+}
+</style>
 
 {% endblock %}

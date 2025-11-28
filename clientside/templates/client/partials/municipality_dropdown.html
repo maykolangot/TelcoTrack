@@ -4,12 +4,12 @@
     <select 
         name="municipality"
         id="id_municipality"
-        class="form-select"
+        class="form-select form-select-lg"
         hx-get="{% url 'load-barangays' %}"
         hx-target="#barangay-container"
         hx-trigger="change"
     >
-        <option value="">---------</option>
+        <option value="">Select Municipality</option>
         {% if municipalities %}
             {% for m in municipalities %}
                 <option value="{{ m.id }}">{{ m.name }}</option>

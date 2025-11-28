@@ -29,6 +29,8 @@ from .views import (
     add_invoice,
     add_payment,
     hx_history_table,
+
+    print_number_history,
     )
 
 urlpatterns = [
@@ -64,6 +66,8 @@ urlpatterns = [
     path("numbers/<uuid:number_id>/", number_detail, name="number-detail"),
     path("numbers/<uuid:number_id>/add-invoice/", add_invoice, name="add-invoice"),
     path("numbers/<uuid:number_id>/add-payment/", add_payment, name="add-payment"),
+
+    path("numbers/<uuid:number_id>/print/<str:start>/<str:end>/", print_number_history, name="print_number_history"),
 
 
     path("numbers/<uuid:number_id>/edit/", edit_number, name="edit-number"),

@@ -1,89 +1,332 @@
 {% extends "base.html" %}
 {% block content %}
 
-
 <title>{% block title %}Dashboard{% endblock %}</title>
 
-<div class="container my-4">
-    <h2 class="mb-3">Welcome to the dashboard, {{ user }}!</h2>
-
-    <!-- FILTER BUTTONS -->
-    <div class="mb-3">
-        {% if show_all %}
-            <a href="?day={{ selected_day }}" class="btn btn-primary btn-sm">Show Balance Only</a>
-        {% else %}
-            <a href="?day={{ selected_day }}&show=all" class="btn btn-secondary btn-sm">Show All</a>
-        {% endif %}
-    </div>
-
-    <!-- DAY SWITCH BUTTONS -->
-    <div class="mb-3">
-        <div class="d-flex justify-content-between gap-2">
-            <a href="?day=prev{% if show_all %}&show=all{% endif %}" class="btn btn-outline-secondary btn-sm flex-fill text-nowrap">
-                ← Prev ({{ prev_day }})
-            </a>
-            <a href="?day=today{% if show_all %}&show=all{% endif %}" class="btn btn-outline-primary btn-sm flex-fill text-nowrap">
-                Today ({{ today }})
-            </a>
-            <a href="?day=next{% if show_all %}&show=all{% endif %}" class="btn btn-outline-secondary btn-sm flex-fill text-nowrap">
-                Next ({{ next_day }}) →
-            </a>
+<div class="container my-3 my-md-4">
+    <!-- Header Section -->
+    <div class="row mb-3">
+        <div class="col-12">
+            <div class="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-2">
+                <div class="flex-grow-1">
+                    <h1 class="h3 fw-bold text-primary mb-1">
+                        <i class="bi bi-speedometer2 me-2"></i>Dashboard
+                    </h1>
+                    <p class="text-muted mb-0">Welcome back, {{ user }}!</p>
+                </div>
+                <div class="text-end">
+                    <div class="badge bg-primary px-3 py-2">
+                        <i class="bi bi-calendar-check me-1"></i>{{ selected_day }}
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
-    <!-- CURRENTLY SELECTED DAY -->
-    <h4 class="mt-4">
-        Showing schedule for:
-        <span class="text-primary">{{ selected_day }}</span>
-    </h4>
-
-    <hr>
-
-    {% if numbers %}
-        {% for number in numbers %}
-            <a href="{% url 'number-detail' number.id %}" class="text-decoration-none text-dark">
-                <div class="card mb-3 shadow-sm">
-                    <div class="card-body">
-
-                        <!-- FIRST ROW -->
-                        <div class="row">
-                            <div class="col-md-6">
-                                <strong>Trade Name:</strong> {{ number.client.trade_name }}
-                            </div>
-                            <div class="col-md-6 text-md-end mt-2 mt-md-0">
-                                <strong>Handler:</strong> {{ number.handler.name }}
-                            </div>
-                        </div>
-
-                        <!-- SECOND ROW (ADDRESS) -->
-                        <div class="mt-2">
-                            <strong>Address:</strong>
-                            {% if number.client.primary_address %}
-                                {{ number.client.primary_address.house_number_street }},
-                                {{ number.client.primary_address.barangay }},
-                                {{ number.client.primary_address.municipality }}
-                            {% else %}
-                                <em>No Address Available</em>
-                            {% endif %}
-                        </div>
-
-                        <!-- ADDITIONAL INFO -->
-                        <div class="row mt-3">
-                            <div class="col-md-6">
-                                <strong>Number:</strong> {{ number.number }}
-                            </div>
-                            <div class="col-md-6">
-                                <strong>Balance to Pay:</strong> <span class="text-danger">{{ number.current_balance }}</span>
-                            </div>
-                        </div>
-
+    <!-- Controls Section -->
+    <div class="row mb-4 g-3">
+        <div class="col-md-8">
+            <!-- Day Navigation -->
+            <div class="card border-0 shadow-sm">
+                <div class="card-body p-3">
+                    <div class="d-flex justify-content-between gap-2">
+                        <a href="?day=prev{% if show_all %}&show=all{% endif %}" 
+                           class="btn btn-outline-primary d-flex align-items-center justify-content-center gap-2 flex-fill text-nowrap">
+                            <i class="bi bi-chevron-left"></i>
+                            <span class="d-none d-sm-inline">Previous</span>
+                            <span class="d-inline d-sm-none">Prev</span>
+                        </a>
+                        <a href="?day=today{% if show_all %}&show=all{% endif %}" 
+                           class="btn btn-primary d-flex align-items-center justify-content-center gap-2 flex-fill text-nowrap">
+                            <i class="bi bi-calendar-check"></i>
+                            Today
+                        </a>
+                        <a href="?day=next{% if show_all %}&show=all{% endif %}" 
+                           class="btn btn-outline-primary d-flex align-items-center justify-content-center gap-2 flex-fill text-nowrap">
+                            <span class="d-none d-sm-inline">Next</span>
+                            <span class="d-inline d-sm-none">Next</span>
+                            <i class="bi bi-chevron-right"></i>
+                        </a>
                     </div>
                 </div>
-            </a>
-        {% endfor %}
-    {% else %}
-        <p>No scheduled collections available.</p>
-    {% endif %}
+            </div>
+        </div>
+        <div class="col-md-4">
+            <!-- Filter Toggle -->
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body d-flex align-items-center justify-content-center p-3">
+                    {% if show_all %}
+                        <a href="?day={{ selected_day }}" class="btn btn-outline-danger d-flex align-items-center gap-2 w-100 justify-content-center">
+                            <i class="bi bi-eye-slash"></i>
+                            <span>Balance Only</span>
+                        </a>
+                    {% else %}
+                        <a href="?day={{ selected_day }}&show=all" class="btn btn-outline-success d-flex align-items-center gap-2 w-100 justify-content-center">
+                            <i class="bi bi-eye"></i>
+                            <span>Show All</span>
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Schedule Section -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white py-3">
+                    <h5 class="card-title mb-0 text-primary">
+                        <i class="bi bi-list-check me-2"></i>
+                        Collection Schedule for {{ selected_day }}
+                    </h5>
+                </div>
+                <div class="card-body p-0">
+                    {% if numbers %}
+                        <div class="list-group list-group-flush">
+                            {% for number in numbers %}
+                                <a href="{% url 'number-detail' number.id %}" class="list-group-item list-group-item-action border-0 py-3">
+                                    <!-- Mobile Layout -->
+                                    <div class="d-block d-lg-none">
+                                        <div class="d-flex justify-content-between align-items-start mb-2">
+                                            <div class="d-flex align-items-center flex-grow-1">
+                                                <div class="bg-primary bg-opacity-10 rounded-circle p-2 me-3">
+                                                    <i class="bi bi-building text-primary"></i>
+                                                </div>
+                                                <div class="flex-grow-1">
+                                                    <h6 class="fw-bold text-dark mb-1">{{ number.client.trade_name }}</h6>
+                                                    <small class="text-muted">
+                                                        <i class="bi bi-person me-1"></i>{{ number.client.name }}
+                                                    </small>
+                                                </div>
+                                            </div>
+                                            <span class="badge {% if number.current_balance > 0 %}bg-danger{% else %}bg-success{% endif %} ms-2">
+                                                ₱{{ number.current_balance }}
+                                            </span>
+                                        </div>
+                                        
+                                        <div class="row g-2 mt-2">
+                                            <div class="col-6">
+                                                <small class="text-muted d-block mb-1">
+                                                    <i class="bi bi-phone me-1"></i>Number
+                                                </small>
+                                                <span class="fw-bold text-dark">{{ number.number }}</span>
+                                            </div>
+                                            <div class="col-6">
+                                                <small class="text-muted d-block mb-1">
+                                                    <i class="bi bi-person-badge me-1"></i>Handler
+                                                </small>
+                                                <span class="text-dark">{{ number.handler.name }}</span>
+                                            </div>
+                                        </div>
+
+                                        {% if number.client.primary_address %}
+                                        <div class="mt-2">
+                                            <small class="text-muted">
+                                                <i class="bi bi-geo-alt me-1"></i>
+                                                {{ number.client.primary_address.barangay }}, {{ number.client.primary_address.municipality }}
+                                            </small>
+                                        </div>
+                                        {% endif %}
+
+                                        <!-- Progress bar -->
+                                        <div class="mt-3">
+                                            <div class="progress" style="height: 4px;">
+                                                <div class="progress-bar {% if number.current_balance > 0 %}bg-warning{% else %}bg-success{% endif %}" 
+                                                     style="width: {% if number.current_balance > 0 %}75{% else %}100{% endif %}%">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Desktop Layout -->
+                                    <div class="d-none d-lg-block">
+                                        <div class="row align-items-center">
+                                            <!-- Client Info -->
+                                            <div class="col-lg-4 mb-3 mb-lg-0">
+                                                <div class="d-flex align-items-center">
+                                                    <div class="bg-primary bg-opacity-10 rounded-circle p-3 me-3">
+                                                        <i class="bi bi-building text-primary"></i>
+                                                    </div>
+                                                    <div>
+                                                        <h6 class="fw-bold text-dark mb-1">{{ number.client.trade_name }}</h6>
+                                                        <small class="text-muted">
+                                                            <i class="bi bi-person me-1"></i>{{ number.client.name }}
+                                                        </small>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            
+                                            <!-- Address -->
+                                            <div class="col-lg-3 mb-3 mb-lg-0">
+                                                <small class="text-muted d-block mb-1">
+                                                    <i class="bi bi-geo-alt me-1"></i>Address
+                                                </small>
+                                                <span class="text-dark">
+                                                    {% if number.client.primary_address %}
+                                                        {{ number.client.primary_address.barangay }}, {{ number.client.primary_address.municipality }}
+                                                    {% else %}
+                                                        <em class="text-muted">No Address</em>
+                                                    {% endif %}
+                                                </span>
+                                            </div>
+                                            
+                                            <!-- Handler -->
+                                            <div class="col-lg-2 mb-3 mb-lg-0">
+                                                <small class="text-muted d-block mb-1">
+                                                    <i class="bi bi-person-badge me-1"></i>Handler
+                                                </small>
+                                                <span class="text-dark">{{ number.handler.name }}</span>
+                                            </div>
+                                            
+                                            <!-- Number & Balance -->
+                                            <div class="col-lg-3">
+                                                <div class="d-flex justify-content-between align-items-center">
+                                                    <div>
+                                                        <small class="text-muted d-block mb-1">
+                                                            <i class="bi bi-phone me-1"></i>Number
+                                                        </small>
+                                                        <span class="fw-bold text-dark">{{ number.number }}</span>
+                                                    </div>
+                                                    <div class="text-end">
+                                                        <small class="text-muted d-block mb-1">Balance</small>
+                                                        <span class="badge {% if number.current_balance > 0 %}bg-danger{% else %}bg-success{% endif %}">
+                                                            ₱{{ number.current_balance }}
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- Progress bar -->
+                                        <div class="mt-3">
+                                            <div class="progress" style="height: 4px;">
+                                                <div class="progress-bar {% if number.current_balance > 0 %}bg-warning{% else %}bg-success{% endif %}" 
+                                                     style="width: {% if number.current_balance > 0 %}75{% else %}100{% endif %}%">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </a>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <!-- Empty State -->
+                        <div class="text-center py-5">
+                            <div class="bg-light rounded-circle p-4 d-inline-block mb-3">
+                                <i class="bi bi-calendar-x fs-1 text-muted"></i>
+                            </div>
+                            <h5 class="text-muted">No Collections Scheduled</h5>
+                            <p class="text-muted mb-4">There are no collections scheduled for {{ selected_day }}</p>
+                            <a href="{% url 'clients' %}" class="btn btn-primary">
+                                <i class="bi bi-plus-circle me-2"></i>Add Clients
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
+
+<style>
+.card {
+    border-radius: 0.75rem;
+}
+
+.card-header {
+    border-radius: 0.75rem 0.75rem 0 0 !important;
+}
+
+.btn {
+    border-radius: 0.5rem;
+    font-weight: 500;
+}
+
+.list-group-item {
+    border-radius: 0 !important;
+    border-bottom: 1px solid #e9ecef !important;
+    transition: all 0.2s ease;
+}
+
+.list-group-item:hover {
+    background-color: #f8f9fa;
+    transform: translateX(2px);
+}
+
+.list-group-item:last-child {
+    border-bottom: none !important;
+}
+
+.badge {
+    border-radius: 0.5rem;
+    font-weight: 500;
+}
+
+.progress {
+    border-radius: 1rem;
+    background-color: #e9ecef;
+}
+
+.progress-bar {
+    border-radius: 1rem;
+}
+
+/* Mobile-specific adjustments */
+@media (max-width: 768px) {
+    .container.my-3 {
+        margin-top: 1rem !important;
+        margin-bottom: 1rem !important;
+    }
+    
+    .list-group-item {
+        padding: 1rem !important;
+    }
+    
+    /* Ensure adequate touch targets */
+    .btn {
+        min-height: 44px;
+    }
+    
+    .list-group-item {
+        min-height: 120px;
+    }
+}
+
+/* Small phone adjustments */
+@media (max-width: 576px) {
+    .container {
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+    
+    .card-body.p-3 {
+        padding: 1rem !important;
+    }
+    
+    .list-group-item {
+        padding: 0.875rem !important;
+    }
+}
+
+/* Make sure text is readable on small screens */
+@media (max-width: 768px) {
+    h1.h3 {
+        font-size: 1.4rem;
+    }
+    
+    .card-title {
+        font-size: 1.1rem;
+    }
+    
+    h6.fw-bold {
+        font-size: 1rem;
+    }
+    
+    small.text-muted {
+        font-size: 0.875rem;
+    }
+}
+</style>
 
 {% endblock %}

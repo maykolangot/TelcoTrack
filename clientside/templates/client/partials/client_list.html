@@ -1,18 +1,250 @@
 {% if clients %}
-    <div class="mt-3">
+    <div class="row g-4">
 
         {% for client in clients %}
-            <div 
-                onclick="window.location.href='{% url 'client-detail' client.id %}'"
-                class="p-3 mb-2 border rounded shadow-sm"
-                style="cursor: pointer;"
-            >
-                <h4 style="margin: 0;">{{ client.name }}</h4>
-                <small class="text-muted">{{ client.trade_name }}</small>
+            <div class="col-12 col-md-6 col-xl-4">
+                <div 
+                    onclick="window.location.href='{% url 'client-detail' client.id %}'"
+                    class="card client-card h-100 border-0 shadow-hover"
+                    style="cursor: pointer;"
+                >
+                    <!-- Card Header with Status -->
+                    <div class="card-header bg-transparent border-0 pb-0 position-relative">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div class="flex-grow-1 pe-3">
+                                <h5 class="card-title fw-bold text-dark mb-1 text-truncate">
+                                    {{ client.name }}
+                                </h5>
+                                {% if client.trade_name %}
+                                    <p class="card-text text-muted small mb-0">
+                                        <i class="bi bi-building me-1"></i>
+                                        <span class="text-truncate">{{ client.trade_name }}</span>
+                                    </p>
+                                {% endif %}
+                            </div>
+                            <!-- Status Badge -->
+                            <span class="badge {% if client.client_total_balance > 0 %}bg-danger{% else %}bg-success{% endif %} badge-status">
+                                <i class="bi {% if client.client_total_balance > 0 %}bi-exclamation-circle{% else %}bi-check-circle{% endif %} me-1"></i>
+                                {% if client.client_total_balance > 0 %}Due{% else %}Paid{% endif %}
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Card Body -->
+                    <div class="card-body pt-3">
+                        <!-- Client Stats -->
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="client-stat">
+                                <span class="stat-badge">
+                                    <i class="bi bi-phone me-2"></i>
+                                    <span class="fw-bold fs-6">{{ client.client_numbers_count }}</span>
+                                    <small class="text-muted ms-1">Numbers</small>
+                                </span>
+                            </div>
+                            
+                            <div class="text-end">
+                                <div class="balance-amount fw-bold {% if client.client_total_balance > 0 %}text-danger{% else %}text-success{% endif %}">
+                                    ₱{{ client.client_total_balance|floatformat:2 }}
+                                </div>
+                                <small class="text-muted balance-label">Total Balance</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Card Footer with Chevron -->
+                    <div class="card-footer bg-transparent border-0 pt-0">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <small class="text-muted">Click to view details</small>
+                            <i class="bi bi-chevron-right text-primary chevron-icon"></i>
+                        </div>
+                    </div>
+
+                    <!-- Hover Overlay -->
+                    <div class="hover-overlay"></div>
+                </div>
             </div>
         {% endfor %}
 
     </div>
 {% else %}
-    <p class="mt-3 text-muted">No clients found.</p>
+    <!-- Empty State -->
+    <div class="text-center py-5">
+        <div class="empty-state-icon mb-4">
+            <i class="bi bi-people-fill"></i>
+        </div>
+        <h4 class="text-muted mb-3">No clients found</h4>
+        <p class="text-muted mb-4">Start by adding your first client to the system</p>
+        <a href="{% url 'create-client' %}" class="btn btn-primary btn-lg px-4">
+            <i class="bi bi-plus-circle me-2"></i>Add New Client
+        </a>
+    </div>
 {% endif %}
+
+<style>
+.client-card {
+    border-radius: 1rem;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+    position: relative;
+    overflow: hidden;
+}
+
+.client-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #007bff, #0056b3);
+    transform: scaleX(0);
+    transition: transform 0.3s ease;
+}
+
+.client-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(0, 123, 255, 0.1);
+}
+
+.client-card:hover::before {
+    transform: scaleX(1);
+}
+
+.card-header {
+    padding: 1.5rem 1.5rem 0.5rem;
+}
+
+.card-body {
+    padding: 0.5rem 1.5rem 1rem;
+}
+
+.card-footer {
+    padding: 1rem 1.5rem 1.5rem;
+}
+
+.badge-status {
+    font-size: 0.75rem;
+    padding: 0.5rem 0.75rem;
+    border-radius: 0.75rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.stat-badge {
+    background: rgba(0, 123, 255, 0.1);
+    color: #007bff;
+    padding: 0.75rem 1rem;
+    border-radius: 0.75rem;
+    display: inline-flex;
+    align-items: center;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.client-card:hover .stat-badge {
+    background: rgba(0, 123, 255, 0.15);
+    transform: scale(1.05);
+}
+
+.balance-amount {
+    font-size: 1.25rem;
+    line-height: 1.2;
+}
+
+.balance-label {
+    font-size: 0.875rem;
+}
+
+.chevron-icon {
+    transition: transform 0.3s ease;
+    font-size: 1.25rem;
+}
+
+.client-card:hover .chevron-icon {
+    transform: translateX(4px);
+    color: #0056b3;
+}
+
+.hover-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(0, 123, 255, 0.03) 0%, transparent 100%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+    border-radius: 1rem;
+}
+
+.client-card:hover .hover-overlay {
+    opacity: 1;
+}
+
+/* Empty State Styling */
+.empty-state-icon {
+    width: 120px;
+    height: 120px;
+    background: linear-gradient(135deg, #007bff, #0056b3);
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+}
+
+.empty-state-icon i {
+    font-size: 3rem;
+    color: white;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .client-card:hover {
+        transform: translateY(-4px);
+    }
+    
+    .card-header,
+    .card-body,
+    .card-footer {
+        padding: 1rem;
+    }
+    
+    .stat-badge {
+        padding: 0.5rem 0.75rem;
+        font-size: 0.875rem;
+    }
+    
+    .balance-amount {
+        font-size: 1.125rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .empty-state-icon {
+        width: 100px;
+        height: 100px;
+    }
+    
+    .empty-state-icon i {
+        font-size: 2.5rem;
+    }
+}
+
+/* Animation for card appearance */
+.client-card {
+    animation: fadeInUp 0.6s ease-out;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+</style>

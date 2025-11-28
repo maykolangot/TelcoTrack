@@ -91,6 +91,18 @@ class Client(models.Model):
         related_name='clients'
     )
 
+    @property
+    def numbers_count(self):
+        return self.number_set.count()
+    
+    @property
+    def total_balance(self):
+        # Sum of all current_balance for all numbers of this client
+        total = 0
+        for number in self.number_set.all():
+            total += number.current_balance
+        return total
+
     def __str__(self):
         return f"Client of { self.user_client.name } ----- { self.name } ----- { self.trade_name }"
     

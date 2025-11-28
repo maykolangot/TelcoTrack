@@ -5,208 +5,576 @@
 {% block content %}
 
     <!-- Hero Section -->
-    <div class="row align-items-center min-vh-100 bg-gradient-primary text-white py-5" style="margin-top: -1px;">
-        <div class="col-lg-8 mx-auto text-center py-5">
-            <h1 class="display-4 fw-bold mb-4">TelcoTrack</h1>
-            <p class="lead fs-4 mb-4">
-                Professional Load Payment & Invoice Tracking Solution
-            </p>
-            <p class="fs-5 mb-5 opacity-90">
-                Streamline your client management, track payments, and automate invoice generation 
-                with our comprehensive telecommunications load tracking platform.
-            </p>
-            
-            {% if not user.is_authenticated %}
-            <div class="d-grid gap-3 d-md-flex justify-content-md-center">
-                <a class="btn btn-light btn-lg px-5 py-3 fw-semibold" href="{% url 'login' %}">
-                    <i class="bi bi-box-arrow-in-right me-2"></i>
-                    Login to Dashboard
-                </a>
-                <a class="btn btn-outline-light btn-lg px-5 py-3 fw-semibold" href="#features">
-                    <i class="bi bi-info-circle me-2"></i>
-                    Learn More
-                </a>
-            </div>
-            {% else %}
-            <div class="d-grid gap-3 d-md-flex justify-content-md-center">
-                <a class="btn btn-light btn-lg px-5 py-3 fw-semibold" href="{% url 'dashboard' %}">
-                    <i class="bi bi-speedometer2 me-2"></i>
-                    Go to Dashboard
-                </a>
-            </div>
-            {% endif %}
-        </div>
-    </div>
-
-    <!-- Features Section -->
-    <div id="features" class="row py-5 bg-light">
-        <div class="col-lg-10 mx-auto">
-            <div class="text-center mb-5">
-                <h2 class="fw-bold text-primary mb-3">Powerful Features</h2>
-                <p class="fs-5 text-muted">Everything you need to manage client load payments efficiently</p>
-            </div>
-            
-            <div class="row g-4">
-                <div class="col-md-4">
-                    <div class="card h-100 border-0 shadow-sm">
-                        <div class="card-body text-center p-4">
-                            <div class="feature-icon bg-primary bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
-                                <i class="bi bi-people-fill text-primary fs-2"></i>
-                            </div>
-                            <h4 class="fw-semibold mb-3">Client Management</h4>
-                            <p class="text-muted">
-                                Organize and manage client information, contact details, and service history in one centralized platform.
-                            </p>
+    <section class="hero-section position-relative overflow-hidden">
+        <div class="container">
+            <div class="row align-items-center min-vh-100 py-5">
+                <div class="col-lg-8 mx-auto text-center py-5">
+                    <!-- Animated Background Elements -->
+                    <div class="hero-shape-1"></div>
+                    <div class="hero-shape-2"></div>
+                    
+                    <div class="hero-content position-relative">
+                        <h1 class="hero-title display-3 fw-bold mb-4 animate-fade-in">
+                            Telco<span class="text-warning">Track</span>
+                        </h1>
+                        <p class="hero-subtitle lead fs-2 mb-4 animate-fade-in delay-1">
+                            Professional Load Payment & Invoice Tracking
+                        </p>
+                        <p class="hero-description fs-5 mb-5 opacity-90 animate-fade-in delay-2">
+                            Streamline your client management, track payments, and automate invoice generation 
+                            with our comprehensive telecommunications load tracking platform.
+                        </p>
+                        
+                        {% if not user.is_authenticated %}
+                        <div class="hero-buttons d-flex flex-column flex-md-row justify-content-center gap-3 animate-fade-in delay-3">
+                            <a class="btn btn-light btn-lg px-5 py-3 fw-semibold hero-btn-primary" href="{% url 'login' %}">
+                                <i class="bi bi-box-arrow-in-right me-2"></i> Login to Dashboard
+                            </a>
+                            <a class="btn btn-outline-light btn-lg px-5 py-3 fw-semibold hero-btn-secondary" href="#features">
+                                <i class="bi bi-play-circle me-2"></i> Watch Demo
+                            </a>
                         </div>
-                    </div>
-                </div>
-                
-                <div class="col-md-4">
-                    <div class="card h-100 border-0 shadow-sm">
-                        <div class="card-body text-center p-4">
-                            <div class="feature-icon bg-success bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
-                                <i class="bi bi-cash-coin text-success fs-2"></i>
-                            </div>
-                            <h4 class="fw-semibold mb-3">Payment Tracking</h4>
-                            <p class="text-muted">
-                                Monitor load payments, track balances, and generate real-time payment reports for better financial oversight.
-                            </p>
+                        {% else %}
+                        <div class="hero-buttons d-flex justify-content-center gap-3 animate-fade-in delay-3">
+                            <a class="btn btn-light btn-lg px-5 py-3 fw-semibold hero-btn-primary" href="{% url 'dashboard' %}">
+                                <i class="bi bi-speedometer2 me-2"></i> Go to Dashboard
+                            </a>
                         </div>
-                    </div>
-                </div>
-                
-                <div class="col-md-4">
-                    <div class="card h-100 border-0 shadow-sm">
-                        <div class="card-body text-center p-4">
-                            <div class="feature-icon bg-info bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
-                                <i class="bi bi-receipt text-info fs-2"></i>
-                            </div>
-                            <h4 class="fw-semibold mb-3">Invoice Automation</h4>
-                            <p class="text-muted">
-                                Automatically generate and manage invoices, reducing manual work and ensuring professional documentation.
-                            </p>
-                        </div>
+                        {% endif %}
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-
-    <!-- Benefits Section -->
-    <div id="benefits" class="row py-5 bg-white">
-        <div class="col-lg-10 mx-auto">
-            <div class="text-center mb-5">
-                <h2 class="fw-bold text-primary mb-3">Why Choose TelcoTrack?</h2>
-            </div>
-            <div class="row g-4">
-                <div class="col-md-6">
-                    <div class="d-flex">
-                        <i class="bi bi-check-circle-fill text-success fs-4 me-3"></i>
-                        <div>
-                            <h5>Save Time & Reduce Errors</h5>
-                            <p class="text-muted mb-0">Automate repetitive tasks and minimize manual data entry errors.</p>
-                        </div>
-                    </div>
+        
+        <!-- Scroll Indicator -->
+        <div class="scroll-indicator">
+            <a href="#features" class="scroll-link">
+                <div class="mouse">
+                    <div class="wheel"></div>
                 </div>
-                <div class="col-md-6">
-                    <div class="d-flex">
-                        <i class="bi bi-check-circle-fill text-success fs-4 me-3"></i>
-                        <div>
-                            <h5>Professional Reporting</h5>
-                            <p class="text-muted mb-0">Generate clean, professional reports and invoices for your clients.</p>
-                        </div>
-                    </div>
+                <div class="arrow">
+                    <span></span>
+                    <span></span>
+                    <span></span>
                 </div>
-                <div class="col-md-6">
-                    <div class="d-flex">
-                        <i class="bi bi-check-circle-fill text-success fs-4 me-3"></i>
-                        <div>
-                            <h5>Real-time Insights</h5>
-                            <p class="text-muted mb-0">Get instant visibility into payment statuses and client balances.</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="d-flex">
-                        <i class="bi bi-check-circle-fill text-success fs-4 me-3"></i>
-                        <div>
-                            <h5>Mobile Responsive</h5>
-                            <p class="text-muted mb-0">Access your data from anywhere, on any device.</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Stats Section -->
-    <div class="row py-5 bg-primary text-white">
-        <div class="col-lg-8 mx-auto">
-            <div class="row text-center g-4">
-                <div class="col-md-3">
-                    <div class="p-3">
-                        <h3 class="fw-bold display-6">100+</h3>
-                        <p class="mb-0 opacity-90">Clients Managed</p>
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="p-3">
-                        <h3 class="fw-bold display-6">24/7</h3>
-                        <p class="mb-0 opacity-90">System Availability</p>
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="p-3">
-                        <h3 class="fw-bold display-6">99%</h3>
-                        <p class="mb-0 opacity-90">Accuracy Rate</p>
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="p-3">
-                        <h3 class="fw-bold display-6">50%</h3>
-                        <p class="mb-0 opacity-90">Time Saved</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- CTA Section -->
-    <div id="contact" class="row py-5 bg-light">
-        <div class="col-lg-6 mx-auto text-center">
-            <h3 class="fw-bold mb-3">Ready to Streamline Your Load Management?</h3>
-            <p class="mb-4 text-muted">Join professional telecommunications businesses using TelcoTrack</p>
-            <a class="btn btn-primary btn-lg px-5 fw-semibold" href="{% url 'login' %}">
-                Get Started Now <i class="bi bi-arrow-right ms-2"></i>
             </a>
         </div>
-    </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="features-section py-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-10 mx-auto">
+                    <div class="text-center mb-5">
+                        <h2 class="section-title fw-bold text-primary mb-3">Powerful Features</h2>
+                        <p class="section-subtitle fs-5 text-muted">Everything you need to manage client load payments efficiently</p>
+                    </div>
+                    
+                    <div class="row g-4">
+                        <div class="col-md-4">
+                            <div class="feature-card card h-100 border-0 shadow-hover">
+                                <div class="card-body text-center p-4">
+                                    <div class="feature-icon bg-primary bg-opacity-10 rounded-3 d-inline-flex align-items-center justify-content-center mb-4">
+                                        <i class="bi bi-people-fill text-primary fs-1"></i>
+                                    </div>
+                                    <h4 class="feature-title fw-semibold mb-3">Client Management</h4>
+                                    <p class="feature-description text-muted">
+                                        Organize and manage client information, contact details, and service history in one centralized platform.
+                                    </p>
+                                    <div class="feature-badge">Smart Organization</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-4">
+                            <div class="feature-card card h-100 border-0 shadow-hover">
+                                <div class="card-body text-center p-4">
+                                    <div class="feature-icon bg-success bg-opacity-10 rounded-3 d-inline-flex align-items-center justify-content-center mb-4">
+                                        <i class="bi bi-cash-coin text-success fs-1"></i>
+                                    </div>
+                                    <h4 class="feature-title fw-semibold mb-3">Payment Tracking</h4>
+                                    <p class="feature-description text-muted">
+                                        Monitor load payments, track balances, and generate real-time payment reports for better financial oversight.
+                                    </p>
+                                    <div class="feature-badge">Real-time Updates</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-4">
+                            <div class="feature-card card h-100 border-0 shadow-hover">
+                                <div class="card-body text-center p-4">
+                                    <div class="feature-icon bg-info bg-opacity-10 rounded-3 d-inline-flex align-items-center justify-content-center mb-4">
+                                        <i class="bi bi-receipt text-info fs-1"></i>
+                                    </div>
+                                    <h4 class="feature-title fw-semibold mb-3">Invoice Automation</h4>
+                                    <p class="feature-description text-muted">
+                                        Automatically generate and manage invoices, reducing manual work and ensuring professional documentation.
+                                    </p>
+                                    <div class="feature-badge">Auto Generation</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Benefits Section -->
+    <section class="benefits-section py-5 bg-light">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-10 mx-auto">
+                    <div class="text-center mb-5">
+                        <h2 class="section-title fw-bold text-primary mb-3">Why Choose TelcoTrack?</h2>
+                        <p class="section-subtitle text-muted">Experience the difference with our comprehensive solution</p>
+                    </div>
+                    <div class="row g-4">
+                        <div class="col-md-6">
+                            <div class="benefit-item d-flex align-items-start p-3">
+                                <div class="benefit-icon flex-shrink-0">
+                                    <i class="bi bi-clock-fill text-primary"></i>
+                                </div>
+                                <div class="benefit-content ms-4">
+                                    <h5 class="benefit-title fw-semibold mb-2">Save Time & Reduce Errors</h5>
+                                    <p class="benefit-description text-muted mb-0">Automate repetitive tasks and minimize manual data entry errors with intelligent automation.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="benefit-item d-flex align-items-start p-3">
+                                <div class="benefit-icon flex-shrink-0">
+                                    <i class="bi bi-graph-up-arrow text-success"></i>
+                                </div>
+                                <div class="benefit-content ms-4">
+                                    <h5 class="benefit-title fw-semibold mb-2">Professional Reporting</h5>
+                                    <p class="benefit-description text-muted mb-0">Generate clean, professional reports and invoices that impress your clients.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="benefit-item d-flex align-items-start p-3">
+                                <div class="benefit-icon flex-shrink-0">
+                                    <i class="bi bi-lightning-charge-fill text-warning"></i>
+                                </div>
+                                <div class="benefit-content ms-4">
+                                    <h5 class="benefit-title fw-semibold mb-2">Real-time Insights</h5>
+                                    <p class="benefit-description text-muted mb-0">Get instant visibility into payment statuses and client balances with live dashboards.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="benefit-item d-flex align-items-start p-3">
+                                <div class="benefit-icon flex-shrink-0">
+                                    <i class="bi bi-phone-fill text-info"></i>
+                                </div>
+                                <div class="benefit-content ms-4">
+                                    <h5 class="benefit-title fw-semibold mb-2">Mobile Responsive</h5>
+                                    <p class="benefit-description text-muted mb-0">Access your data from anywhere, on any device with our fully responsive design.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="stats-section py-5 text-white">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 mx-auto">
+                    <div class="row text-center g-4">
+                        <div class="col-md-3 col-6">
+                            <div class="stat-item p-3">
+                                <div class="stat-icon mb-3">
+                                    <i class="bi bi-people-fill fs-1"></i>
+                                </div>
+                                <h3 class="stat-number fw-bold display-6">100+</h3>
+                                <p class="stat-label mb-0 opacity-90">Clients Managed</p>
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-6">
+                            <div class="stat-item p-3">
+                                <div class="stat-icon mb-3">
+                                    <i class="bi bi-clock-fill fs-1"></i>
+                                </div>
+                                <h3 class="stat-number fw-bold display-6">24/7</h3>
+                                <p class="stat-label mb-0 opacity-90">System Availability</p>
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-6">
+                            <div class="stat-item p-3">
+                                <div class="stat-icon mb-3">
+                                    <i class="bi bi-check-circle-fill fs-1"></i>
+                                </div>
+                                <h3 class="stat-number fw-bold display-6">99%</h3>
+                                <p class="stat-label mb-0 opacity-90">Accuracy Rate</p>
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-6">
+                            <div class="stat-item p-3">
+                                <div class="stat-icon mb-3">
+                                    <i class="bi bi-lightning-charge-fill fs-1"></i>
+                                </div>
+                                <h3 class="stat-number fw-bold display-6">50%</h3>
+                                <p class="stat-label mb-0 opacity-90">Time Saved</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section py-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 mx-auto text-center">
+                    <div class="cta-card card border-0 shadow-lg">
+                        <div class="card-body py-5 px-4">
+                            <h3 class="cta-title fw-bold mb-3">Ready to Streamline Your Load Management?</h3>
+                            <p class="cta-description mb-4 text-muted fs-5">Join professional telecommunications businesses using TelcoTrack today</p>
+                            <a class="btn btn-primary btn-lg px-5 py-3 fw-semibold cta-button" href="{% url 'login' %}">
+                                Get Started Now <i class="bi bi-arrow-right ms-2"></i>
+                            </a>
+                            <div class="mt-4">
+                                <small class="text-muted">No credit card required • Free trial available</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 
 <style>
-    .min-vh-100 {
-        min-height: 100vh;
+/* Hero Section */
+.hero-section {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #5a67d8 100%);
+    background-size: 400% 400%;
+    animation: gradientShift 15s ease infinite;
+    color: white;
+    position: relative;
+}
+
+@keyframes gradientShift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+.hero-shape-1, .hero-shape-2 {
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.1);
+    animation: float 6s ease-in-out infinite;
+}
+
+.hero-shape-1 {
+    width: 300px;
+    height: 300px;
+    top: -150px;
+    right: -100px;
+}
+
+.hero-shape-2 {
+    width: 200px;
+    height: 200px;
+    bottom: -100px;
+    left: -50px;
+    animation-delay: 2s;
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    50% { transform: translateY(-20px) rotate(180deg); }
+}
+
+.hero-title {
+    background: linear-gradient(135deg, #ffffff 0%, #f0f0f0 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.hero-subtitle {
+    font-weight: 300;
+    opacity: 0.9;
+}
+
+/* Animations */
+.animate-fade-in {
+    opacity: 0;
+    transform: translateY(30px);
+    animation: fadeInUp 1s ease forwards;
+}
+
+.delay-1 { animation-delay: 0.3s; }
+.delay-2 { animation-delay: 0.6s; }
+.delay-3 { animation-delay: 0.9s; }
+
+@keyframes fadeInUp {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Buttons */
+.hero-btn-primary, .hero-btn-secondary {
+    border-radius: 50px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 2px solid transparent;
+}
+
+.hero-btn-primary:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 25px rgba(255, 255, 255, 0.2);
+}
+
+.hero-btn-secondary {
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+}
+
+.hero-btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: translateY(-3px);
+    border-color: rgba(255, 255, 255, 0.5);
+}
+
+/* Scroll Indicator */
+.scroll-indicator {
+    position: absolute;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.mouse {
+    width: 24px;
+    height: 40px;
+    border: 2px solid rgba(255, 255, 255, 0.6);
+    border-radius: 15px;
+    position: relative;
+    margin: 0 auto;
+}
+
+.wheel {
+    width: 4px;
+    height: 8px;
+    background: rgba(255, 255, 255, 0.8);
+    border-radius: 2px;
+    position: absolute;
+    top: 8px;
+    left: 50%;
+    transform: translateX(-50%);
+    animation: scroll 2s infinite;
+}
+
+@keyframes scroll {
+    0% { transform: translateX(-50%) translateY(0); opacity: 1; }
+    100% { transform: translateX(-50%) translateY(12px); opacity: 0; }
+}
+
+/* Features Section */
+.features-section {
+    background: #f8f9fa;
+}
+
+.feature-card {
+    border-radius: 1rem;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    background: white;
+}
+
+.feature-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1) !important;
+}
+
+.feature-icon {
+    width: 100px;
+    height: 100px;
+    transition: all 0.3s ease;
+}
+
+.feature-card:hover .feature-icon {
+    transform: scale(1.1) rotate(5deg);
+}
+
+.feature-badge {
+    display: inline-block;
+    background: linear-gradient(135deg, #007bff, #0056b3);
+    color: white;
+    padding: 0.25rem 1rem;
+    border-radius: 50px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    margin-top: 1rem;
+}
+
+/* Benefits Section */
+.benefit-item {
+    transition: all 0.3s ease;
+    border-radius: 1rem;
+}
+
+.benefit-item:hover {
+    background: white;
+    transform: translateX(10px);
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+}
+
+.benefit-icon {
+    width: 50px;
+    height: 50px;
+    background: rgba(0, 123, 255, 0.1);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+}
+
+/* Stats Section */
+.stats-section {
+    background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+    position: relative;
+    overflow: hidden;
+}
+
+.stats-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 100" fill="%23ffffff" opacity="0.05"><polygon points="1000,100 1000,0 0,100"/></svg>');
+    background-size: cover;
+}
+
+.stat-item {
+    position: relative;
+    z-index: 2;
+}
+
+.stat-icon {
+    opacity: 0.8;
+}
+
+.stat-number {
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+/* CTA Section */
+.cta-card {
+    border-radius: 1.5rem;
+    background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+}
+
+.cta-button {
+    border-radius: 50px;
+    background: linear-gradient(135deg, #007bff, #0056b3);
+    border: none;
+    transition: all 0.3s ease;
+}
+
+.cta-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(0, 123, 255, 0.3);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .hero-title {
+        font-size: 2.5rem;
     }
     
-    .bg-gradient-primary {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    .hero-subtitle {
+        font-size: 1.25rem;
     }
     
-    .feature-icon {
-        transition: transform 0.3s ease;
+    .feature-card:hover {
+        transform: translateY(-5px);
     }
     
-    .card:hover .feature-icon {
-        transform: scale(1.1);
+    .benefit-item:hover {
+        transform: translateX(5px);
     }
-    
-    .btn {
-        transition: all 0.3s ease;
-    }
-    
-    .btn:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-    }
+}
+
+/* Utility Classes */
+.shadow-hover {
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+}
+
+.section-title {
+    position: relative;
+    display: inline-block;
+}
+
+.section-title::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 3px;
+    background: linear-gradient(135deg, #007bff, #0056b3);
+    border-radius: 2px;
+}
 </style>
+
+<!-- Smooth Scroll Script -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Smooth scrolling for anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            const target = document.querySelector(this.getAttribute('href'));
+            if (target) {
+                target.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }
+        });
+    });
+
+    // Add scroll animations
+    const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.opacity = '1';
+                entry.target.style.transform = 'translateY(0)';
+            }
+        });
+    }, observerOptions);
+
+    // Observe elements for scroll animations
+    document.querySelectorAll('.feature-card, .benefit-item, .stat-item').forEach(el => {
+        el.style.opacity = '0';
+        el.style.transform = 'translateY(30px)';
+        el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+        observer.observe(el);
+    });
+});
+</script>
 
 {% endblock %}

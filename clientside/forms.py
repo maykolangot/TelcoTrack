@@ -90,6 +90,12 @@ class CreateClientForm(forms.ModelForm):
             self.add_error("barangay", "Selected barangay does not belong to selected municipality.")
 
         return cleaned
+    
+    def clean_name(self):
+        name = self.cleaned_data.get("name", "").strip()  # remove leading/trailing spaces
+        # Capitalize each word
+        name = " ".join(word.capitalize() for word in name.split())
+        return name
 
     def save(self, commit=True):
         client = super().save(commit=False)
@@ -154,6 +160,17 @@ class InvoiceForm(forms.ModelForm):
     class Meta:
         model = Invoice
         fields = ['time', 'added_load', 'balance', 'reference_number']
+
+    def clean(self):
+        cleaned_data = super().clean()
+        added_load = cleaned_data.get("added_load")
+        balance = cleaned_data.get("balance")
+
+        # Auto-sync backend
+        if added_load is not None:
+            cleaned_data["balance"] = added_load
+
+        return cleaned_data
 
 
 class PaymentForm(forms.ModelForm):

@@ -1,13 +1,121 @@
+
+
+
+{% load widget_tweaks %}
+
+<!-- ===== Styling Tweaks ===== -->
+<style>
+    .form-label {
+        font-weight: 600;
+        color: #34495e;
+    }
+
+    .form-control:focus {
+        border-color: #4a90e2;
+        box-shadow: 0 0 0 0.15rem rgba(74, 144, 226, 0.25);
+        transition: 0.2s ease;
+    }
+
+    .input-icon-wrapper {
+        position: relative;
+    }
+
+    .input-icon-wrapper i {
+        position: absolute;
+        top: 50%;
+        right: 12px;
+        transform: translateY(-50%);
+        color: #7f8c8d;
+        pointer-events: none;
+    }
+
+    .readonly-field {
+        background: #f2f4f6;
+        font-weight: 600;
+    }
+</style>
+
+
+<!-- ===== JS Logic ===== -->
+<script>
+function syncBalance() {
+    const addedLoad = document.getElementById("id_added_load").value;
+    const balanceField = document.getElementById("id_balance");
+
+    // Simple numeric sync
+    balanceField.value = addedLoad;
+
+    // Visual emphasis ❗
+    balanceField.classList.add("highlight");
+
+    setTimeout(() => {
+        balanceField.classList.remove("highlight");
+    }, 300);
+}
+</script>
+
+
+<!-- ===== THE FORM ===== -->
 <form 
     method="post"
     hx-post="{% url 'add-invoice' number.id %}"
     hx-target="#mainModalBody"
     hx-swap="innerHTML"
+    class="p-2"
 >
     {% csrf_token %}
-    {{ form.as_p }}
 
-    <div class="mt-3">
-        <button class="btn btn-primary" type="submit">Save Invoice</button>
+    <!-- Time -->
+    <div class="mb-3">
+        <label class="form-label">Time</label>
+        <div class="input-icon-wrapper">
+            {{ form.time|add_class:"form-control"|attr:"placeholder:Select time" }}
+            <i class="bi bi-clock"></i>
+        </div>
     </div>
+
+    <!-- Reference Number -->
+    <div class="mb-3">
+        <label class="form-label">Reference Number</label>
+        <div class="input-icon-wrapper">
+            {{ form.reference_number|add_class:"form-control"|attr:"placeholder:Enter reference..." }}
+            <i class="bi bi-hash"></i>
+        </div>
+    </div>
+
+    <!-- Added Load -->
+    <div class="mb-3">
+        <label class="form-label">Added Load</label>
+        <div class="input-icon-wrapper">
+            <input 
+                type="number" 
+                name="added_load" 
+                class="form-control"
+                id="id_added_load"
+                placeholder="Enter load amount..."
+                oninput="syncBalance()"
+            />
+            <i class="bi bi-battery-half"></i>
+        </div>
+    </div>
+
+    <!-- Balance (readonly) -->
+    <div class="mb-3">
+        <label class="form-label">Balance</label>
+        <div class="input-icon-wrapper">
+            <input 
+                type="number" 
+                name="balance"
+                class="form-control readonly-field"
+                id="id_balance"
+                placeholder="Auto calculated"
+                readonly
+            />
+            <i class="bi bi-cash-coin"></i>
+        </div>
+    </div>
+
+    <button class="btn btn-primary w-100 mt-3" type="submit">
+        <i class="bi bi-save"></i> Save Invoice
+    </button>
 </form>

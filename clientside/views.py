@@ -10,10 +10,27 @@ from django.core.paginator import Paginator
 from django.db.utils import OperationalError
 from django.db import connection
 from django.core.cache import cache
+from django.db.models.functions import Lower
+from django.contrib.staticfiles import finders
+
+
+from django.db.models import Prefetch, Count, Sum
+from django.db.models.functions import Coalesce
+
+
 
 # Time Aware using the TIME_ZONE on Settings
 from django.utils import timezone
 from django.utils.timezone import timedelta
+
+
+# Printing:
+
+from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer, Image
+from reportlab.lib.pagesizes import letter
+from reportlab.lib.styles import getSampleStyleSheet
+from reportlab.lib import colors
+from datetime import datetime
 
 
 from .models import (
@@ -21,7 +38,7 @@ from .models import (
     Province,
     Municipality,
     Barangay,
-    
+
     Client,
     Handler,
     NumberOperatorIdentifier,
@@ -202,7 +219,7 @@ def load_barangays(request):
     })
 
 
-@login_required
+@login_required(login_url='login')
 def create_client(request):
     form = CreateClientForm(request.POST or None, user=request.user)
     regions = Region.objects.all().order_by('-id')
@@ -221,33 +238,58 @@ def create_client(request):
 
 
 #list all Client
-@login_required
+@login_required(login_url='login')
 def search_clients(request):
     query = request.GET.get("search", "")
 
     clients = Client.objects.filter(
         user_client=request.user,
         name__icontains=query
+    ).annotate(
+        client_numbers_count=Count('number')
+    ).prefetch_related(
+        Prefetch(
+            'number_set',
+            queryset=Number.objects.prefetch_related('invoices', 'payments')
+        )
     ).order_by("name")
+
+    # Calculate total_balance for each client (same as list_client view)
+    for client in clients:
+        client.client_total_balance = 0
+        for number in client.number_set.all():
+            client.client_total_balance += float(number.current_balance)
 
     return render(request, "client/partials/client_list.html", {
         "clients": clients
     })
 
 
-@login_required
+@login_required(login_url='login')
 def list_client(request):
-    # show all clients by default
-    clients = Client.objects.filter(
-        user_client=request.user
-    ).order_by("name")
+    clients = Client.objects.filter(user_client=request.user)\
+        .annotate(lower_name=Lower('name'))\
+        .annotate(client_numbers_count=Count('number'))\
+        .prefetch_related(
+            Prefetch(
+                'number_set',
+                queryset=Number.objects.prefetch_related('invoices', 'payments')
+            )
+        )\
+        .order_by('lower_name')
+
+    # Calculate total_balance for each client
+    for client in clients:
+        client.client_total_balance = 0  # Changed name
+        for number in client.number_set.all():
+            client.client_total_balance += float(number.current_balance)
 
     return render(request, "client/list-client.html", {
         "clients": clients
     })
 
 
-@login_required
+@login_required(login_url='login')
 def client_detail(request, client_id):
     client = Client.objects.get(id=client_id, user_client=request.user)
     handlers = Handler.objects.filter(client_handler=client)
@@ -263,7 +305,7 @@ def client_detail(request, client_id):
     })
 
 
-@login_required
+@login_required(login_url='login')
 def add_handler(request, client_id):
     client = get_object_or_404(Client, id=client_id)
 
@@ -285,7 +327,7 @@ def add_handler(request, client_id):
     })
 
 
-@login_required
+@login_required(login_url='login')
 def edit_handler(request, client_id, handler_id):
     client = Client.objects.get(id=client_id, user_client=request.user)
     handler = Handler.objects.get(id=handler_id, client_handler=client)
@@ -305,7 +347,7 @@ def edit_handler(request, client_id, handler_id):
     })
 
 
-@login_required
+@login_required(login_url='login')
 def list_handler(request, client_id):
     client = Client.objects.get(id=client_id, user_client=request.user)
     handlers = Handler.objects.filter(client_handler=client)
@@ -316,7 +358,7 @@ def list_handler(request, client_id):
     })
 
 
-@login_required
+@login_required(login_url='login')
 def add_number(request, client_id):
     client = get_object_or_404(Client, id=client_id)
 
@@ -361,7 +403,7 @@ def add_number(request, client_id):
     return render(request, 'number/add_number.html', {"form": form, "client": client})
 
 
-@login_required
+
 def number_search(request, client_id):
 
     client = get_object_or_404(Client, id=client_id)
@@ -383,7 +425,7 @@ def number_search(request, client_id):
     return HttpResponse(html)
 
 
-@login_required
+@login_required(login_url='login')
 def number_detail(request, number_id):
     number = get_object_or_404(Number, id=number_id)
 
@@ -394,7 +436,7 @@ def number_detail(request, number_id):
     })
 
 
-@login_required
+@login_required(login_url='login')
 def edit_number(request, number_id):
     number = get_object_or_404(Number, id=number_id)
 
@@ -412,7 +454,7 @@ def edit_number(request, number_id):
     })
 
 
-@login_required
+@login_required(login_url='login')
 def number_page(request):
     return render(request, "number/number.html")
 
@@ -431,7 +473,7 @@ def normalize_number(raw):
     return raw
 
 
-@login_required
+
 def search_number_page(request):
     query = request.GET.get("q", "").strip()
 
@@ -455,12 +497,12 @@ def search_number_page(request):
     })
 
 
-@login_required
+@login_required(login_url='login')
 def payment_invoice_page(request):
     return render(request, "payments/payment_invoice.html")
 
 
-@login_required
+@login_required(login_url='login')
 def add_invoice(request, number_id):
     number = get_object_or_404(Number, id=number_id)
 
@@ -468,9 +510,22 @@ def add_invoice(request, number_id):
         form = InvoiceForm(request.POST)
         if form.is_valid():
             invoice = form.save(commit=False)
-            invoice.number = number  # attach invoice to the number
+            invoice.number = number
             invoice.save()
+
+            if request.htmx:
+                return HttpResponse("""
+                    <script>
+                        bootstrap.Modal.getInstance(
+                            document.getElementById('mainModal')
+                        ).hide();
+                        htmx.trigger('#history-table', 'refresh');
+                        location.reload();  // refresh totals
+                    </script>
+                """)
+
             return redirect(reverse('number-detail', args=[number_id]))
+
     else:
         form = InvoiceForm(initial={'time': timezone.now()})
 
@@ -480,7 +535,7 @@ def add_invoice(request, number_id):
     })
 
 
-@login_required
+@login_required(login_url='login')
 def add_payment(request, number_id):
     number = get_object_or_404(Number, id=number_id)
 
@@ -488,9 +543,22 @@ def add_payment(request, number_id):
         form = PaymentForm(request.POST)
         if form.is_valid():
             payment = form.save(commit=False)
-            payment.number = number  # attach payment to the number
+            payment.number = number
             payment.save()
+
+            if request.htmx:
+                return HttpResponse("""
+                    <script>
+                        bootstrap.Modal.getInstance(
+                            document.getElementById('mainModal')
+                        ).hide();
+                        htmx.trigger('#history-table', 'refresh');
+                        location.reload();
+                    </script>
+                """)
+
             return redirect(reverse('number-detail', args=[number_id]))
+
     else:
         form = PaymentForm(initial={'time': timezone.now()})
 
@@ -568,5 +636,132 @@ def hx_history_table(request, number_id):
         'number': number,              # ➜ added
     })
 
+
+def print_number_history(request, number_id, start, end):
+    number = get_object_or_404(Number, id=number_id)
+
+    # ---- Convert strings to datetime ----
+    try:
+        start_date = datetime.strptime(start, "%Y-%m-%d")
+        end_date = datetime.strptime(end, "%Y-%m-%d").replace(hour=23, minute=59, second=59)
+    except:
+        return HttpResponse("Invalid date format. Use YYYY-MM-DD")
+
+    start_date = timezone.make_aware(start_date)
+    end_date = timezone.make_aware(end_date)
+
+    # ---- Build history ----
+    history = build_history_queryset(number)
+    filtered = [h for h in history if start_date <= h["time"] <= end_date]
+
+    # ---- Sort chronologically ----
+    filtered = sorted(filtered, key=lambda h: h["time"])
+
+    # ---- PDF response ----
+    response = HttpResponse(content_type="application/pdf")
+    response["Content-Disposition"] = f'inline; filename="history-{number.number}.pdf"'
+
+    doc = SimpleDocTemplate(
+        response,
+        pagesize=letter,
+        leftMargin=40,
+        rightMargin=40,
+        topMargin=40,       # reduced padding
+        bottomMargin=40
+    )
+
+    styles = getSampleStyleSheet()
+    title_style = styles["Heading1"]
+    title_style.fontSize = 18
+    title_style.leading = 22
+    title_style.spaceAfter = 12
+
+    subtitle_style = styles["Normal"]
+    subtitle_style.fontSize = 11
+    subtitle_style.leading = 14
+    subtitle_style.spaceAfter = 6
+
+    elements = []
+
+    # ---- Load logo ----
+    logo_path = finders.find("images/logo.png")
+    if logo_path:
+        img = Image(logo_path, width=120, height=45)  # resize as needed
+        elements.append(img)
+        elements.append(Spacer(1, 8))
+
+
+    # ---- Header Info (Option A) ----
+    elements.append(Paragraph("History Report", title_style))
+
+    client_name = number.client.name
+    trade_name = number.client.trade_name
+
+    header_html = f"""
+        <b>Client Name:</b> {client_name}<br/>
+        <b>Trade Name:</b> {trade_name}<br/>
+        <b>Number:</b> {number.number}<br/>
+        <b>Date Range:</b> {start} → {end}<br/>
+    """
+
+    elements.append(Paragraph(header_html, subtitle_style))
+    elements.append(Spacer(1, 12))
+
+    # ---- Table data ----
+    table_data = [["Time", "Type", "Amount", "Reference"]]
+
+    for h in filtered:
+        time_str = (
+            h["time"]
+            .astimezone(timezone.get_current_timezone())
+            .strftime("%Y-%m-%d %H:%M")
+        )
+
+        table_data.append([
+            time_str,
+            h["type"],
+            f"{h['amount']}",
+            h["reference"],
+        ])
+
+    # ---- Table styling ----
+    table = Table(table_data, repeatRows=1,
+        colWidths=[130, 90, 80, 200]
+    )
+
+    style = TableStyle([
+        ("BACKGROUND", (0,0), (-1,0), colors.Color(0.9, 0.9, 0.9)),
+        ("FONTNAME", (0,0), (-1,0), "Helvetica-Bold"),
+        ("FONTSIZE", (0,0), (-1,-1), 10),
+        ("TEXTCOLOR", (0,0), (-1,0), colors.black),
+
+        ("ALIGN", (0,0), (-1,-1), "CENTER"),
+        ("ALIGN", (2,1), (2,-1), "RIGHT"),
+
+        ("GRID", (0,0), (-1,-1), 0.4, colors.grey),
+
+        ("TOPPADDING", (0,0), (-1,0), 10),
+        ("BOTTOMPADDING", (0,0), (-1,0), 10),
+        ("TOPPADDING", (0,1), (-1,-1), 6),
+        ("BOTTOMPADDING", (0,1), (-1,-1), 6),
+    ])
+
+    # ---- Color rows based on type ----
+    for i, h in enumerate(filtered, start=1):  # row 0 = header
+        t = h["type"].lower()
+
+        if t == "invoice":
+            style.add("BACKGROUND", (0, i), (-1, i), colors.Color(1, 0.88, 0.88))  # light red
+        elif t == "payment":
+            style.add("BACKGROUND", (0, i), (-1, i), colors.Color(0.88, 1, 0.88))  # light green
+
+    table.setStyle(style)
+
+    elements.append(table)
+
+    # ---- Build PDF ----
+    doc.build(elements)
+
+    return response
 
 

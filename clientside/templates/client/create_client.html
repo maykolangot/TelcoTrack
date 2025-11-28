@@ -1,85 +1,351 @@
 {% extends "base.html" %}
+{% load widget_tweaks %}
 
 {% block content %}
 
-{% load widget_tweaks %}
-
-
 <div class="container my-4">
-    <h1 class="mb-4">Create a Client</h1>
+    <!-- Header Section -->
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="d-flex align-items-center mb-4">
+                <div class="flex-grow-1">
+                    <h1 class="h2 fw-bold text-primary mb-1">
+                        <i class="bi bi-person-plus me-2"></i>Create New Client
+                    </h1>
+                    <p class="text-muted mb-0">Add a new client to your account</p>
+                </div>
+                <a href="{% url 'clients' %}" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left me-2"></i>Back to Clients
+                </a>
+            </div>
 
-    <form method="POST" class="row g-3">
-        {% csrf_token %}
+            <!-- Main Form Card -->
+            <div class="card border-0 shadow-lg">
+                <div class="card-header bg-primary text-white py-3">
+                    <h5 class="card-title mb-0">
+                        <i class="bi bi-info-circle me-2"></i>Client Information
+                    </h5>
+                </div>
+                
+                <div class="card-body p-4">
+                    <form method="POST" class="row g-4">
+                        {% csrf_token %}
 
-        <!-- REGION -->
-        <div class="col-md-6">
-            <label for="id_region" class="form-label">Region</label>
-            <select 
-                name="region"
-                id="id_region"
-                class="form-select"
-                hx-get="{% url 'load-provinces' %}"
-                hx-target="#province-container"
-                hx-trigger="change"
-            >
-                <option value="">---------</option>
-                {% for region in regions %}
-                <option value="{{ region.id }}">{{ region.name }}</option>
-                {% endfor %}
-            </select>
+                        <!-- Basic Information Section -->
+                        <div class="col-12">
+                            <h6 class="text-primary mb-3 pb-2 border-bottom">
+                                <i class="bi bi-person-badge me-2"></i>Basic Information
+                            </h6>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="{{ form.name.id_for_label }}" class="form-label fw-semibold">
+                                <i class="bi bi-person me-1"></i>Full Name
+                            </label>
+                            {{ form.name|add_class:"form-control form-control-lg"|attr:"placeholder:Enter client's full name"|attr:"oninput:updateTradeName(this.value)" }}
+                            {% if form.name.errors %}
+                                <div class="text-danger small mt-1">{{ form.name.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="{{ form.trade_name.id_for_label }}" class="form-label fw-semibold">
+                                <i class="bi bi-building me-1"></i>Trade Name
+                                <small class="text-muted ms-1">(Auto-generated but editable)</small>
+                            </label>
+                            <div class="input-group">
+                                {{ form.trade_name|add_class:"form-control form-control-lg"|attr:"placeholder:Trade name will auto-fill"|attr:"id:trade_name_field" }}
+                                <button type="button" class="btn btn-outline-secondary" onclick="resetTradeName()" title="Reset to auto-generated name">
+                                    <i class="bi bi-arrow-clockwise"></i>
+                                </button>
+                            </div>
+                            {% if form.trade_name.errors %}
+                                <div class="text-danger small mt-1">{{ form.trade_name.errors }}</div>
+                            {% endif %}
+                            <div class="form-text">
+                                <i class="bi bi-info-circle me-1"></i>
+                                Auto-generates as "[Name]'s Store" but you can customize it
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="{{ form.contact_number.id_for_label }}" class="form-label fw-semibold">
+                                <i class="bi bi-telephone me-1"></i>Contact Number
+                            </label>
+                            {{ form.contact_number|add_class:"form-control form-control-lg"|attr:"placeholder:Enter phone number" }}
+                            {% if form.contact_number.errors %}
+                                <div class="text-danger small mt-1">{{ form.contact_number.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="{{ form.status.id_for_label }}" class="form-label fw-semibold">
+                                <i class="bi bi-circle-fill me-1"></i>Status
+                            </label>
+                            {{ form.status|add_class:"form-select form-select-lg" }}
+                            {% if form.status.errors %}
+                                <div class="text-danger small mt-1">{{ form.status.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Address Information Section -->
+                        <div class="col-12 mt-4">
+                            <h6 class="text-primary mb-3 pb-2 border-bottom">
+                                <i class="bi bi-geo-alt me-2"></i>Address Information
+                            </h6>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="id_region" class="form-label fw-semibold">
+                                <i class="bi bi-map me-1"></i>Region
+                            </label>
+                            <select 
+                                name="region"
+                                id="id_region"
+                                class="form-select form-select-lg"
+                                hx-get="{% url 'load-provinces' %}"
+                                hx-target="#province-container"
+                                hx-trigger="change"
+                            >
+                                <option value="">Select Region</option>
+                                {% for region in regions %}
+                                <option value="{{ region.id }}">{{ region.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="col-md-6" id="province-container">
+                            {% include 'client/partials/province_dropdown.html' with provinces=None %}
+                        </div>
+
+                        <div class="col-md-6" id="municipality-container">
+                            {% include 'client/partials/municipality_dropdown.html' with municipalities=None %}
+                        </div>
+
+                        <div class="col-md-6" id="barangay-container">
+                            {% include 'client/partials/barangay_dropdown.html' with barangays=None %}
+                        </div>
+
+                        <div class="col-12">
+                            <label for="{{ form.house_number_street.id_for_label }}" class="form-label fw-semibold">
+                                <i class="bi bi-house me-1"></i>Street and House Number
+                            </label>
+                            {{ form.house_number_street|add_class:"form-control form-control-lg"|attr:"placeholder:Enter street address and house number (Optional)" }}
+                            {% if form.house_number_street.errors %}
+                                <div class="text-danger small mt-1">{{ form.house_number_street.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Additional Information -->
+                        <div class="col-12 mt-4">
+                            <h6 class="text-primary mb-3 pb-2 border-bottom">
+                                <i class="bi bi-calendar me-2"></i>Additional Information
+                            </h6>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="{{ form.application_date.id_for_label }}" class="form-label fw-semibold">
+                                <i class="bi bi-calendar-check me-1"></i>Application Date
+                            </label>
+                            {{ form.application_date|add_class:"form-control form-control-lg"|attr:"type:date" }}
+                            {% if form.application_date.errors %}
+                                <div class="text-danger small mt-1">{{ form.application_date.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Submit Button -->
+                        <div class="col-12 mt-4 pt-3 border-top">
+                            <div class="d-flex gap-3 justify-content-end">
+                                <a href="{% url 'clients' %}" class="btn btn-outline-secondary px-4">
+                                    <i class="bi bi-x-circle me-2"></i>Cancel
+                                </a>
+                                <button type="submit" class="btn btn-success px-4">
+                                    <i class="bi bi-check-circle me-2"></i>Save Client
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
         </div>
+    </div>
+</div>
 
-        <!-- PROVINCE -->
-        <div class="col-md-6" id="province-container">
-            {% include 'client/partials/province_dropdown.html' with provinces=None %}
-        </div>
+<script>
+// Store the original trade name to track if user modified it
+let originalTradeName = '';
+let userModifiedTradeName = false;
 
-        <!-- MUNICIPALITY -->
-        <div class="col-md-6" id="municipality-container">
-            {% include 'client/partials/municipality_dropdown.html' with municipalities=None %}
-        </div>
+function updateTradeName(clientName) {
+    const tradeNameField = document.getElementById('trade_name_field');
+    
+    // Only auto-update if user hasn't manually modified the trade name
+    if (!userModifiedTradeName && clientName.trim() !== '') {
+        // Generate trade name: "Client's Name Store"
+        const generatedTradeName = clientName.trim() + "'s Store";
+        tradeNameField.value = generatedTradeName;
+        originalTradeName = generatedTradeName;
+    } else if (!userModifiedTradeName && clientName.trim() === '') {
+        // Clear trade name if client name is empty and not modified by user
+        tradeNameField.value = '';
+        originalTradeName = '';
+    }
+}
 
-        <!-- BARANGAY -->
-        <div class="col-md-6" id="barangay-container">
-            {% include 'client/partials/barangay_dropdown.html' with barangays=None %}
-        </div>
+function resetTradeName() {
+    const nameField = document.querySelector('input[name="name"]');
+    const tradeNameField = document.getElementById('trade_name_field');
+    
+    if (nameField.value.trim() !== '') {
+        const generatedTradeName = nameField.value.trim() + "'s Store";
+        tradeNameField.value = generatedTradeName;
+        originalTradeName = generatedTradeName;
+        userModifiedTradeName = false;
+        
+        // Show feedback
+        showTempMessage('Trade name reset to auto-generated value', 'success');
+    } else {
+        showTempMessage('Please enter a client name first', 'warning');
+    }
+}
 
-        <!-- STREET & HOUSE NUMBER -->
-        <div class="col-md-12">
-            <label for="{{ form.house_number_street.id_for_label }}" class="form-label">Street and House Number (Optional)</label>
-            {{ form.house_number_street|add_class:"form-control" }}
+function showTempMessage(message, type) {
+    // Remove any existing temp messages
+    const existingMessage = document.querySelector('.temp-message');
+    if (existingMessage) {
+        existingMessage.remove();
+    }
+    
+    // Create new message
+    const messageDiv = document.createElement('div');
+    messageDiv.className = `alert alert-${type} temp-message position-fixed top-0 start-50 translate-middle-x mt-3`;
+    messageDiv.style.zIndex = '1050';
+    messageDiv.innerHTML = `
+        <div class="d-flex align-items-center">
+            <i class="bi bi-${type === 'success' ? 'check-circle' : 'exclamation-triangle'} me-2"></i>
+            ${message}
         </div>
+    `;
+    
+    document.body.appendChild(messageDiv);
+    
+    // Remove after 3 seconds
+    setTimeout(() => {
+        messageDiv.remove();
+    }, 3000);
+}
 
-        <!-- OTHER CLIENT FIELDS -->
-        <div class="col-md-6">
-            <label for="{{ form.name.id_for_label }}" class="form-label">Name</label>
-            {{ form.name|add_class:"form-control" }}
-        </div>
+// Initialize when page loads
+document.addEventListener('DOMContentLoaded', function() {
+    const tradeNameField = document.getElementById('trade_name_field');
+    const nameField = document.querySelector('input[name="name"]');
+    
+    // Store initial trade name value
+    originalTradeName = tradeNameField.value;
+    
+    // Detect when user manually modifies trade name
+    tradeNameField.addEventListener('input', function() {
+        if (this.value !== originalTradeName) {
+            userModifiedTradeName = true;
+        }
+    });
+    
+    // Also detect on focus out in case of paste operations
+    tradeNameField.addEventListener('blur', function() {
+        if (this.value !== originalTradeName) {
+            userModifiedTradeName = true;
+        }
+    });
+    
+    // Auto-generate trade name if both fields are empty on page load
+    if (nameField.value.trim() !== '' && tradeNameField.value.trim() === '') {
+        updateTradeName(nameField.value);
+    }
+});
+</script>
 
-        <div class="col-md-6">
-            <label for="{{ form.trade_name.id_for_label }}" class="form-label">Trade Name</label>
-            {{ form.trade_name|add_class:"form-control" }}
-        </div>
+<style>
+.form-control-lg, .form-select-lg {
+    border: 1px solid #dee2e6;
+    transition: all 0.2s ease;
+}
 
-        <div class="col-md-6">
-            <label for="{{ form.contact_number.id_for_label }}" class="form-label">Contact Number</label>
-            {{ form.contact_number|add_class:"form-control" }}
-        </div>
+.form-control-lg:focus, .form-select-lg:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+    transform: translateY(-1px);
+}
 
-        <div class="col-md-6">
-            <label for="{{ form.status.id_for_label }}" class="form-label">Status</label>
-            {{ form.status|add_class:"form-select" }}
-        </div>
+.card {
+    border-radius: 0.75rem;
+}
 
-        <div class="col-md-6">
-            <label for="{{ form.application_date.id_for_label }}" class="form-label">Application Date</label>
-            {{ form.application_date|add_class:"form-control" }}
-        </div>
+.card-header {
+    border-radius: 0.75rem 0.75rem 0 0 !important;
+}
 
-        <div class="col-12">
-            <button type="submit" class="btn btn-success">Save Client</button>
-        </div>
-    </form>
+.btn {
+    border-radius: 0.5rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.btn-success {
+    background: linear-gradient(135deg, #198754, #157347);
+    border: none;
+}
+
+.btn-success:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(25, 135, 84, 0.3);
+}
+
+.form-label {
+    color: #495057;
+    margin-bottom: 0.5rem;
+}
+
+.input-group .btn-outline-secondary:hover {
+    background-color: #6c757d;
+    border-color: #6c757d;
+    color: white;
+}
+
+.temp-message {
+    animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+    from {
+        transform: translate(-50%, -20px);
+        opacity: 0;
+    }
+    to {
+        transform: translate(-50%, 0);
+        opacity: 1;
+    }
+}
+
+/* Loading states for HTMX */
+.htmx-request {
+    opacity: 0.7;
+}
+
+.htmx-indicator {
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.htmx-request .htmx-indicator {
+    opacity: 1;
+}
+</style>
+
+<!-- Loading Spinner for HTMX -->
+<div class="htmx-indicator position-fixed top-50 start-50 translate-middle">
+    <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Loading...</span>
+    </div>
 </div>
 
 {% endblock %}
