@@ -21,6 +21,7 @@ from .models import (
     Province,
     Municipality,
     Barangay,
+    
     Client,
     Handler,
     NumberOperatorIdentifier,
@@ -41,7 +42,8 @@ from .forms import (
 # Create your views here.
 
 
-
+MAX_ATTEMPTS = 5               # allowed failed attempts
+LOCKOUT_TIME = 100             # seconds (5 minutes)
 
 
 def index(request):
@@ -63,9 +65,6 @@ def index(request):
     
     return render(request, "index.html", context)
 
-
-MAX_ATTEMPTS = 5               # allowed failed attempts
-LOCKOUT_TIME = 100             # seconds (5 minutes)
 
 def get_client_ip(request):
     """Handles reverse-proxy / nginx / cloudflare scenarios."""
@@ -222,6 +221,7 @@ def create_client(request):
 
 
 #list all Client
+@login_required
 def search_clients(request):
     query = request.GET.get("search", "")
 
@@ -235,6 +235,7 @@ def search_clients(request):
     })
 
 
+@login_required
 def list_client(request):
     # show all clients by default
     clients = Client.objects.filter(
@@ -246,6 +247,7 @@ def list_client(request):
     })
 
 
+@login_required
 def client_detail(request, client_id):
     client = Client.objects.get(id=client_id, user_client=request.user)
     handlers = Handler.objects.filter(client_handler=client)
@@ -261,6 +263,7 @@ def client_detail(request, client_id):
     })
 
 
+@login_required
 def add_handler(request, client_id):
     client = get_object_or_404(Client, id=client_id)
 
@@ -282,6 +285,7 @@ def add_handler(request, client_id):
     })
 
 
+@login_required
 def edit_handler(request, client_id, handler_id):
     client = Client.objects.get(id=client_id, user_client=request.user)
     handler = Handler.objects.get(id=handler_id, client_handler=client)
@@ -301,6 +305,7 @@ def edit_handler(request, client_id, handler_id):
     })
 
 
+@login_required
 def list_handler(request, client_id):
     client = Client.objects.get(id=client_id, user_client=request.user)
     handlers = Handler.objects.filter(client_handler=client)
@@ -311,6 +316,7 @@ def list_handler(request, client_id):
     })
 
 
+@login_required
 def add_number(request, client_id):
     client = get_object_or_404(Client, id=client_id)
 
@@ -355,6 +361,7 @@ def add_number(request, client_id):
     return render(request, 'number/add_number.html', {"form": form, "client": client})
 
 
+@login_required
 def number_search(request, client_id):
 
     client = get_object_or_404(Client, id=client_id)
@@ -376,6 +383,7 @@ def number_search(request, client_id):
     return HttpResponse(html)
 
 
+@login_required
 def number_detail(request, number_id):
     number = get_object_or_404(Number, id=number_id)
 
@@ -386,6 +394,7 @@ def number_detail(request, number_id):
     })
 
 
+@login_required
 def edit_number(request, number_id):
     number = get_object_or_404(Number, id=number_id)
 
@@ -403,6 +412,7 @@ def edit_number(request, number_id):
     })
 
 
+@login_required
 def number_page(request):
     return render(request, "number/number.html")
 
@@ -445,10 +455,12 @@ def search_number_page(request):
     })
 
 
+@login_required
 def payment_invoice_page(request):
     return render(request, "payments/payment_invoice.html")
 
 
+@login_required
 def add_invoice(request, number_id):
     number = get_object_or_404(Number, id=number_id)
 
@@ -468,6 +480,7 @@ def add_invoice(request, number_id):
     })
 
 
+@login_required
 def add_payment(request, number_id):
     number = get_object_or_404(Number, id=number_id)
 
